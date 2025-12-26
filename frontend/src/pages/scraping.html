@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scraping Automatique - Coworking Manager</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../../index.html" class="logo">
+                <i class="fas fa-building"></i>
+                <span>Coworking Manager</span>
+            </a>
+            <div class="nav-links">
+                <a href="../../index.html"><i class="fas fa-home"></i> Accueil</a>
+                <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a>
+                <a href="favorites.html"><i class="fas fa-heart"></i> Mes Favoris</a>
+                <a href="scraping.html" class="active"><i class="fas fa-robot"></i> Scraping</a>
+                <div class="user-section" id="userSection">
+                    <div class="user-info">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="usernameDisplay"></span>
+                    </div>
+                    <button onclick="logout()" class="btn btn-danger btn-sm">
+                        <i class="fas fa-sign-out-alt"></i> Déconnexion
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-robot"></i> Scraping Automatique</h1>
+            <p>Scrapez automatiquement les espaces de coworking depuis Google Maps</p>
+        </div>
+
+        <div class="scraping-section">
+            <div class="scraping-card">
+                <div class="scraping-header">
+                    <h2><i class="fas fa-play-circle"></i> Lancer un scraping</h2>
+                    <p>Remplissez les champs ci-dessous pour commencer</p>
+                </div>
+                
+                <form id="scrapingForm" onsubmit="triggerScraping(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="scrapingCity">Ville *</label>
+                            <input type="text" id="scrapingCity" required list="citiesList">
+                            <datalist id="citiesList">
+                                <option value="Casablanca">
+                                <option value="Marrakech">
+                                <option value="Rabat">
+                                <option value="Fès">
+                                <option value="Tanger">
+                                <option value="Agadir">
+                            </datalist>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="scrapingKeyword">Mot-clé *</label>
+                            <input type="text" id="scrapingKeyword" 
+                                   value="coworking space" 
+                                   required>
+                            <small>Ex: coworking space, espace de coworking, bureau partagé</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="maxResults">Nombre maximum de résultats</label>
+                        <input type="range" id="maxResults" min="10" max="100" value="20">
+                        <span id="resultsValue">20 résultats</span>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Lancer le scraping
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="scraping-info">
+                    <h3><i class="fas fa-info-circle"></i> Comment ça marche ?</h3>
+                    <ol>
+                        <li>Notre robot recherche les espaces de coworking sur Google Maps</li>
+                        <li>Il extrait les informations : nom, adresse, téléphone, site web, etc.</li>
+                        <li>Les données sont sauvegardées dans un Google Sheet</li>
+                        <li>Vous recevez le lien vers le Google Sheet généré</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="scraping-results">
+                <h2><i class="fas fa-history"></i> Historique des scrapings</h2>
+                <div id="scrapingHistory">
+                    <!-- L'historique sera chargé ici -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // Vérifier l'authentification
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!AuthManager.requireAuth()) return;
+            AuthManager.checkAuth();
+            loadScrapingHistory();
+            
+            // Gérer le slider
+            const maxResults = document.getElementById('maxResults');
+            const resultsValue = document.getElementById('resultsValue');
+            
+            if (maxResults && resultsValue) {
+                maxResults.addEventListener('input', function() {
+                    resultsValue.textContent = `${this.value} résultats`;
+                });
+            }
+        });
+        
+        // Déclencher le scraping
+        async function triggerScraping(event) {
+            event.preventDefault();
+            
+            const city = document.getElementById('scrapingCity').value;
+            const keyword = document.getElementById('scrapingKeyword').value;
+            const maxResults = document.getElementById('maxResults').value;
+            
+            try {
+                const response = await CoworkingApi.triggerScraping({
+                    city,
+                    keyword,
+                    maxResults
+                });
+                
+                if (response.success) {
+                    AuthManager.showMessage('Scraping lancé avec succès !', 'success');
+                    if (response.data.sheetUrl) {
+                        setTimeout(() => {
+                            window.open(response.data.sheetUrl, '_blank');
+                        }, 2000);
+                    }
+                    loadScrapingHistory();
+                }
+            } catch (error) {
+                console.error('Scraping error:', error);
+                AuthManager.showMessage(error.message || 'Erreur lors du scraping', 'error');
+            }
+        }
+        
+        // Charger l'historique
+        async function loadScrapingHistory() {
+            try {
+                const response = await fetch('/api/scraping/history', {
+                    headers: {
+                        'Authorization': `Bearer ${AuthManager.getToken()}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    displayScrapingHistory(data.data.scrapings);
+                }
+            } catch (error) {
+                console.error('History load error:', error);
+            }
+        }
+        
+        // Afficher l'historique
+        function displayScrapingHistory(scrapings) {
+            const container = document.getElementById('scrapingHistory');
+            if (!container) return;
+            
+            if (!scrapings || scrapings.length === 0) {
+                container.innerHTML = `
+                    <div class="no-history">
+                        <i class="fas fa-clock"></i>
+                        <p>Aucun scraping effectué pour le moment</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = scrapings.map(scraping => `
+                <div class="history-item">
+                    <div class="history-header">
+                        <span class="history-city">${scraping.city}</span>
+                        <span class="history-status status-${scraping.status}">${scraping.status}</span>
+                    </div>
+                    <div class="history-body">
+                        <p><i class="fas fa-search"></i> ${scraping.keyword}</p>
+                        <p><i class="fas fa-calendar"></i> ${new Date(scraping.created_at).toLocaleDateString('fr-FR')}</p>
+                        ${scraping.sheet_url ? `
+                            <a href="${scraping.sheet_url}" target="_blank" class="btn btn-outline btn-sm">
+                                <i class="fas fa-external-link-alt"></i> Voir le Google Sheet
+                            </a>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
