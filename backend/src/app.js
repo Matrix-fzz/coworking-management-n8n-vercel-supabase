@@ -19,7 +19,7 @@ const app = express();
 
 // Middleware CORS
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5500',
+    origin: true, // Allow all origins (reflects the request origin)
     credentials: true,
     optionsSuccessStatus: 200
 };
@@ -36,7 +36,9 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/workspaces', workspaceRoutes);
 app.use('/api/favorites', favoriteRoutes);
-app.use('/api/upload', uploadRoutes)
+app.use('/api/favorites', favoriteRoutes);
+app.use('/api/upload', uploadRoutes);
+app.use('/api/scraping', require('./routes/scraping.routes'));
 // Route de test
 app.get('/api/health', (req, res) => {
     res.json({

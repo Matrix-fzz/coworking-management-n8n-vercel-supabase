@@ -36,4 +36,23 @@ const authMiddleware = (req, res, next) => {
     }
 };
 
-module.exports = authMiddleware;
+const optionalAuthMiddleware = (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+        
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            const token = authHeader.split(' ')[1];
+            const decoded = verifyToken(token);
+            
+            if (decoded) {
+                req.user = decoded;
+            }
+        }
+        next();
+    } catch (error) {
+        // En cas d'erreur (token invalide, expiré, etc.), on continue sans utilisateur connecté
+        next();
+    }
+};
+
+module.exports = { authMiddleware, optionalAuthMiddleware };

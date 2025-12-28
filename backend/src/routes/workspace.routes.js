@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const WorkspaceController = require('../controllers/workspace.controller');
 const { validateWorkspace } = require('../middleware/validation.middleware');
-const authMiddleware = require('../middleware/auth.middleware');
+const { authMiddleware, optionalAuthMiddleware } = require('../middleware/auth.middleware');
 
 // Public routes
-router.get('/', WorkspaceController.getAll);
-router.get('/:id', WorkspaceController.getById);
+router.get('/', optionalAuthMiddleware, WorkspaceController.getAll);
+router.get('/:id', optionalAuthMiddleware, WorkspaceController.getById);
 
 // Protected routes
 router.post('/', authMiddleware, validateWorkspace, WorkspaceController.create);

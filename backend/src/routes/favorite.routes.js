@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const FavoriteController = require('../controllers/favorite.controller');
-const authMiddleware = require('../middleware/auth.middleware');
+const { authMiddleware } = require('../middleware/auth.middleware');
 
 // Protected routes
 router.post('/:itemId', authMiddleware, FavoriteController.add);

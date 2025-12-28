@@ -4,6 +4,7 @@ const API_BASE_URL = 'http://localhost:3000/api';
 // Fonctions utilitaires pour les requêtes API
 class ApiService {
     // Headers communs
+   // Headers communs
     static getHeaders() {
         const headers = {
             'Content-Type': 'application/json',
@@ -20,11 +21,36 @@ class ApiService {
     // Gestion des réponses
     static async handleResponse(response) {
         if (!response.ok) {
-            const error = await response.json().catch(() => ({
-                message: `HTTP error! status: ${response.status}`
-            }));
-            throw new Error(error.message || 'Une erreur est survenue');
+            let errorMessage = `Erreur HTTP: ${response.status}`;
+            
+            try {
+                const errorData = await response.json();
+                
+                if (errorData.message) {
+                    errorMessage = errorData.message;
+                } else if (errorData.error && errorData.error.message) {
+                    errorMessage = errorData.error.message;
+                } else if (Array.isArray(errorData.errors)) {
+                    errorMessage = errorData.errors.map(err => err.msg || err.message).join(', ');
+                }
+            } catch (e) {
+                // Si la réponse n'est pas du JSON
+                if (response.status === 401) {
+                    errorMessage = 'Session expirée. Veuillez vous reconnecter.';
+                } else if (response.status === 403) {
+                    errorMessage = 'Accès refusé.';
+                } else if (response.status === 404) {
+                    errorMessage = 'Ressource non trouvée.';
+                } else if (response.status === 500) {
+                    errorMessage = 'Erreur interne du serveur.';
+                }
+            }
+            
+            const error = new Error(errorMessage);
+            error.status = response.status;
+            throw error;
         }
+        
         return response.json();
     }
 

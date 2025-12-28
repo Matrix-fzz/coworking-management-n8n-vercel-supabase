@@ -53,7 +53,7 @@ const checkTables = async () => {
                 city VARCHAR(50) NOT NULL,
                 amenities TEXT NOT NULL,
                 status ENUM('available', 'full') DEFAULT 'available',
-                image_url VARCHAR(255),
+                image_url TEXT,
                 user_id INT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

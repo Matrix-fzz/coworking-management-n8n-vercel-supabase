@@ -37,7 +37,7 @@ class WorkspaceManager {
             }
         } catch (error) {
             console.error('Error loading workspaces:', error);
-            AuthManager.showMessage('Erreur lors du chargement des espaces', 'error');
+            AppNotification.error('Erreur lors du chargement des espaces');
         } finally {
             this.showLoading(false);
         }
@@ -83,6 +83,24 @@ class WorkspaceManager {
             currency: 'MAD'
         }).format(workspace.price_per_day);
         
+        const isAuthenticated = AuthManager.isAuthenticated();
+        const currentUser = AuthManager.getCurrentUser();
+        
+        let actionButtons = '';
+        // Wiki Model: Any authenticated user can edit/delete
+        if (isAuthenticated) {
+            actionButtons = `
+                <div class="workspace-actions">
+                    <button class="btn-icon edit-btn" onclick="openEditWorkspaceModal(${workspace.id})" title="Modifier">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-icon delete-btn" onclick="deleteWorkspace(${workspace.id})" title="Supprimer">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+        }
+        
         card.innerHTML = `
             <img src="${imageUrl}" alt="${workspace.name}" class="workspace-image">
             <div class="workspace-content">
@@ -106,11 +124,14 @@ class WorkspaceManager {
                     `).join('')}
                 </div>
                 <div class="workspace-footer">
-                    <div class="price">
-                        ${formattedPrice}
-                        <span>/jour</span>
+                    <div class="price-container">
+                        <div class="price">
+                            ${formattedPrice}
+                            <span>/jour</span>
+                        </div>
+                        <span class="status-badge ${statusClass}">${statusText}</span>
                     </div>
-                    <span class="status-badge ${statusClass}">${statusText}</span>
+                   ${actionButtons}
                 </div>
             </div>
         `;
@@ -136,14 +157,41 @@ class WorkspaceManager {
     }
 
     // Ajouter un espace
-    async addWorkspace(event) {
+    // Gérer la soumission (Ajout ou Modification)
+    async handleWorkspaceSubmit(event) {
         event.preventDefault();
         
         const form = document.getElementById('addWorkspaceForm');
         if (!form) return;
         
+        const workspaceId = document.getElementById('workspaceId').value;
+        const isEdit = !!workspaceId;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        
         try {
-            // Récupérer les données du formulaire
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
+
+            // Gestion de l'image
+            // Utiliser getElementById pour être plus robuste
+            const urlInput = document.getElementById('workspaceImage');
+            let finalImageUrl = urlInput ? urlInput.value : ''; 
+            const imageFile = document.getElementById('workspaceImageFile').files[0];
+            
+            if (imageFile) {
+                try {
+                    const uploadResult = await UploadManager.uploadImage(imageFile);
+                    if (uploadResult.success) {
+                        finalImageUrl = uploadResult.data.imageUrl;
+                    }
+                } catch (uploadError) {
+                    console.error('Image upload failed:', uploadError);
+                    AppNotification.warning('Échec de l\'upload de l\'image, utilisation de l\'URL si disponible');
+                }
+            }
+
+            // Récupérer les données
             const amenities = Array.from(form.querySelectorAll('input[name="amenities"]:checked'))
                 .map(checkbox => checkbox.value);
             
@@ -154,27 +202,120 @@ class WorkspaceManager {
                 city: form.workspaceCity.value,
                 amenities: amenities,
                 status: form.workspaceStatus.value,
-                image_url: form.workspaceImage.value || null
+                image_url: finalImageUrl || null
             };
             
-            // Validation
             if (amenities.length === 0) {
-                AuthManager.showMessage('Sélectionnez au moins un équipement', 'error');
+                AppNotification.error('Sélectionnez au moins un équipement');
                 return;
             }
             
-            // Appel API
-            const response = await CoworkingApi.createWorkspace(workspaceData);
+            let response;
+            if (isEdit) {
+                response = await CoworkingApi.updateWorkspace(workspaceId, workspaceData);
+            } else {
+                response = await CoworkingApi.createWorkspace(workspaceData);
+            }
             
             if (response.success) {
-                AuthManager.showMessage('Espace créé avec succès', 'success');
+                if (isEdit) {
+                    AppNotification.success('Espace modifié avec succès');
+                    this.loadWorkspaces(this.currentPage);
+                } else {
+                    AppNotification.success('Espace créé avec succès');
+                    // Reset filters to ensure the new item is visible? 
+                    // For now, just go to page 1 which is safest for "latest items"
+                    this.currentPage = 1;
+                    this.loadWorkspaces(1);
+                }
                 this.closeModal('addWorkspaceModal');
-                form.reset();
-                this.loadWorkspaces(); // Recharger la liste
+                
+                // Reset mode to add
+                this.resetModalMode();
             }
         } catch (error) {
-            console.error('Error adding workspace:', error);
-            AuthManager.showMessage(error.message || 'Erreur lors de la création', 'error');
+            console.error('Error saving workspace:', error);
+            AppNotification.error(error.message || 'Erreur lors de la sauvegarde');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        }
+    }
+
+    // Ouvrir le modal d'édition
+    openEditWorkspaceModal(id) {
+        const workspace = this.workspaces.find(w => w.id === id);
+        if (!workspace) return;
+        
+        const form = document.getElementById('addWorkspaceForm');
+        if (!form) return;
+        
+        // Populate form
+        document.getElementById('workspaceId').value = workspace.id;
+        form.workspaceName.value = workspace.name;
+        form.workspaceCapacity.value = workspace.capacity;
+        form.workspacePrice.value = workspace.price_per_day;
+        form.workspaceCity.value = workspace.city;
+        form.workspaceStatus.value = workspace.status;
+        form.workspaceImage.value = workspace.image_url || '';
+        
+        // Preview handling
+        const previewImg = document.getElementById('previewImg');
+        const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+        if (workspace.image_url) {
+            previewImg.src = workspace.image_url;
+            previewImg.style.display = 'block';
+            if (uploadPlaceholder) uploadPlaceholder.style.display = 'none';
+        } else {
+            previewImg.style.display = 'none';
+            if (uploadPlaceholder) uploadPlaceholder.style.display = 'flex';
+        }
+
+        // Reset file input
+        const fileInput = document.getElementById('workspaceImageFile');
+        if (fileInput) fileInput.value = '';
+        
+        // Reset checkboxes
+        form.querySelectorAll('input[name="amenities"]').forEach(cb => cb.checked = false);
+        
+        // Check amenities
+        let amenities = [];
+        try {
+             amenities = Array.isArray(workspace.amenities) 
+                ? workspace.amenities 
+                : JSON.parse(workspace.amenities);
+        } catch(e) { 
+            amenities = [];
+        }
+        
+        amenities.forEach(amenity => {
+            const cb = form.querySelector(`input[name="amenities"][value="${amenity}"]`);
+            if (cb) cb.checked = true;
+        });
+        
+        // Update UI Text
+        document.getElementById('modalTitle').textContent = 'Modifier l\'espace';
+        document.getElementById('submitBtnText').textContent = 'Modifier l\'espace';
+        
+        this.openModal('addWorkspaceModal');
+    }
+
+    resetModalMode() {
+        const form = document.getElementById('addWorkspaceForm');
+        if (form) {
+             form.reset();
+             document.getElementById('workspaceId').value = '';
+             document.getElementById('modalTitle').textContent = 'Ajouter un espace de coworking';
+             document.getElementById('submitBtnText').textContent = 'Ajouter l\'espace';
+             
+             // Reset preview
+             const previewImg = document.getElementById('previewImg');
+             const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+             if (previewImg) {
+                 previewImg.style.display = 'none';
+                 previewImg.src = '';
+             }
+             if (uploadPlaceholder) uploadPlaceholder.style.display = 'flex';
         }
     }
 
@@ -183,12 +324,12 @@ class WorkspaceManager {
         try {
             const response = await CoworkingApi.updateWorkspace(id, data);
             if (response.success) {
-                AuthManager.showMessage('Espace mis à jour avec succès', 'success');
+                AppNotification.success('Espace mis à jour avec succès');
                 this.loadWorkspaces(this.currentPage);
             }
         } catch (error) {
             console.error('Error updating workspace:', error);
-            AuthManager.showMessage(error.message || 'Erreur lors de la mise à jour', 'error');
+            AppNotification.error(error.message || 'Erreur lors de la mise à jour');
         }
     }
 
@@ -201,19 +342,19 @@ class WorkspaceManager {
         try {
             const response = await CoworkingApi.deleteWorkspace(id);
             if (response.success) {
-                AuthManager.showMessage('Espace supprimé avec succès', 'success');
+                AppNotification.success('Espace supprimé avec succès');
                 this.loadWorkspaces(this.currentPage);
             }
         } catch (error) {
             console.error('Error deleting workspace:', error);
-            AuthManager.showMessage(error.message || 'Erreur lors de la suppression', 'error');
+            AppNotification.error(error.message || 'Erreur lors de la suppression');
         }
     }
 
     // Gestion des favoris
     async toggleFavorite(workspaceId) {
         if (!AuthManager.isAuthenticated()) {
-            AuthManager.showMessage('Connectez-vous pour ajouter aux favoris', 'error');
+            AppNotification.error('Connectez-vous pour ajouter aux favoris');
             return;
         }
         
@@ -224,15 +365,15 @@ class WorkspaceManager {
             if (isFavorite) {
                 await CoworkingApi.removeFavorite(workspaceId);
                 favoriteBtn.classList.remove('active');
-                AuthManager.showMessage('Retiré des favoris', 'success');
+                AppNotification.success('Retiré des favoris');
             } else {
                 await CoworkingApi.addFavorite(workspaceId);
                 favoriteBtn.classList.add('active');
-                AuthManager.showMessage('Ajouté aux favoris', 'success');
+                AppNotification.success('Ajouté aux favoris');
             }
         } catch (error) {
             console.error('Error toggling favorite:', error);
-            AuthManager.showMessage(error.message || 'Erreur avec les favoris', 'error');
+            AppNotification.error(error.message || 'Erreur avec les favoris');
         }
     }
 
@@ -267,16 +408,54 @@ class WorkspaceManager {
         const cityFilter = document.getElementById('cityFilter');
         const statusFilter = document.getElementById('statusFilter');
         
+        const minPrice = document.getElementById('minPrice');
+        const maxPrice = document.getElementById('maxPrice');
+        const minCapacity = document.getElementById('minCapacity');
+        const amenitiesCheckboxes = document.querySelectorAll('#amenitiesFilter input[type="checkbox"]:checked');
+        
+        // City
         if (cityFilter && cityFilter.value) {
             this.currentFilters.city = cityFilter.value;
         } else {
             delete this.currentFilters.city;
         }
         
+        // Status
         if (statusFilter && statusFilter.value) {
             this.currentFilters.status = statusFilter.value;
         } else {
             delete this.currentFilters.status;
+        }
+
+        // Price
+        if (minPrice && minPrice.value) {
+            this.currentFilters.minPrice = minPrice.value;
+        } else {
+            delete this.currentFilters.minPrice;
+        }
+
+        if (maxPrice && maxPrice.value) {
+            this.currentFilters.maxPrice = maxPrice.value;
+        } else {
+            delete this.currentFilters.maxPrice;
+        }
+
+        // Capacity
+        if (minCapacity && minCapacity.value) {
+            this.currentFilters.minCapacity = minCapacity.value;
+        } else {
+            delete this.currentFilters.minCapacity;
+        }
+
+        // Amenities
+        if (amenitiesCheckboxes.length > 0) {
+            // Send as comma-separated string or rely on URLSearchParams handling multiple values
+            // Currently our API wrapper uses URLSearchParams which supports arrays if appended multiple times,
+            // but our backend controller change anticipates an array or comma-separated string.
+            // Let's rely on array.
+            this.currentFilters.amenities = Array.from(amenitiesCheckboxes).map(cb => cb.value);
+        } else {
+            delete this.currentFilters.amenities;
         }
         
         this.loadWorkspaces(1);
@@ -287,8 +466,13 @@ class WorkspaceManager {
         const sortFilter = document.getElementById('sortFilter');
         if (!sortFilter) return;
         
-        // Implémentation simple - dans un cas réel, cela serait géré côté serveur
-        AuthManager.showMessage('Tri en développement', 'info');
+        if (sortFilter.value) {
+            this.currentFilters.sortBy = sortFilter.value;
+        } else {
+            delete this.currentFilters.sortBy;
+        }
+
+        this.loadWorkspaces(1);
     }
 
     // Changer de page
@@ -438,6 +622,46 @@ class WorkspaceManager {
                 });
             }
         });
+
+        // File Input Preview
+        const fileInput = document.getElementById('workspaceImageFile');
+        if (fileInput) {
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    UploadManager.previewImage(file, 'previewImg');
+                    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+                    if (uploadPlaceholder) uploadPlaceholder.style.display = 'none';
+                }
+            });
+        }
+        
+        // URL Input Preview
+        const urlInput = document.getElementById('workspaceImage');
+        if (urlInput) {
+            urlInput.addEventListener('input', (e) => {
+                const url = e.target.value;
+                const previewImg = document.getElementById('previewImg');
+                const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+                
+                if (url && previewImg) {
+                    previewImg.src = url;
+                    previewImg.style.display = 'block';
+                    if (uploadPlaceholder) uploadPlaceholder.style.display = 'none';
+                } else if (!fileInput.files[0] && previewImg) {
+                    // Reset if no file and no URL
+                    previewImg.style.display = 'none';
+                    if (uploadPlaceholder) uploadPlaceholder.style.display = 'flex';
+                }
+            });
+        }
+    }
+    // Toggle Dropdown amenities
+    toggleAmenitiesDropdown() {
+        const dropdown = document.querySelector('.dropdown-check-list');
+        if (dropdown) {
+            dropdown.classList.toggle('visible');
+        }
     }
 }
 
@@ -453,8 +677,11 @@ window.toggleView = workspaceManager.toggleView.bind(workspaceManager);
 window.openAddWorkspaceModal = workspaceManager.openAddWorkspaceModal.bind(workspaceManager);
 window.closeModal = workspaceManager.closeModal.bind(workspaceManager);
 window.filterByCity = workspaceManager.filterByCity.bind(workspaceManager);
-window.addWorkspace = workspaceManager.addWorkspace.bind(workspaceManager);
+window.handleWorkspaceSubmit = workspaceManager.handleWorkspaceSubmit.bind(workspaceManager);
+window.openEditWorkspaceModal = workspaceManager.openEditWorkspaceModal.bind(workspaceManager);
+window.deleteWorkspace = workspaceManager.deleteWorkspace.bind(workspaceManager);
 window.setupEventListeners = workspaceManager.setupEventListeners.bind(workspaceManager);
 
 // Exporter
 window.WorkspaceManager = workspaceManager;
+window.toggleAmenitiesDropdown = workspaceManager.toggleAmenitiesDropdown.bind(workspaceManager);

@@ -127,13 +127,37 @@ class FavoritesManager {
     }
 
     // Retirer des favoris
+    // Retirer des favoris
     async removeFromFavorites(workspaceId) {
         try {
             const response = await CoworkingApi.removeFavorite(workspaceId);
             
             if (response.success) {
+                // Trouver et supprimer l'élément du DOM
+                const card = document.querySelector(`.workspace-card[data-id="${workspaceId}"]`);
+                if (card) {
+                    // Animation simple de suppression
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.9)';
+                    
+                    setTimeout(() => {
+                        card.remove();
+                        
+                        // Vérifier s'il reste des favoris
+                        const container = document.getElementById('favoritesContainer');
+                        if (container && container.children.length === 0) {
+                            this.showNoResults(true);
+                            // Cacher aussi la pagination si vide
+                            const pagination = document.getElementById('pagination');
+                            if (pagination) pagination.innerHTML = '';
+                        }
+                    }, 300);
+                }
+                
                 AuthManager.showMessage('Retiré des favoris', 'success');
-                this.loadFavorites(this.currentPage);
+                // Ne plus recharger toute la page
+                // this.loadFavorites(this.currentPage);
             }
         } catch (error) {
             console.error('Error removing favorite:', error);

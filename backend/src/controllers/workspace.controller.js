@@ -15,7 +15,10 @@ class WorkspaceController {
                 status: req.query.status,
                 minPrice: req.query.minPrice,
                 maxPrice: req.query.maxPrice,
-                search: req.query.search
+                minCapacity: req.query.minCapacity,
+                search: req.query.search,
+                sortBy: req.query.sortBy,
+                amenities: req.query.amenities ? (Array.isArray(req.query.amenities) ? req.query.amenities : req.query.amenities.split(',')) : undefined
             };
 
             // Récupérer les espaces

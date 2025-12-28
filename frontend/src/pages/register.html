@@ -32,21 +32,21 @@
                 <p>Remplissez le formulaire pour vous inscrire</p>
             </div>
             
-            <form id="registerForm" onsubmit="register(event)" class="auth-form">
+            <form id="registerForm" class="auth-form">
                 <div class="form-group">
-                    <label for="username">Nom d'utilisateur</label>
-                    <input type="text" id="username" required minlength="3">
+                    <label for="username">Nom d'utilisateur *</label>
+                    <input type="text" id="username" name="username" required minlength="3">
                 </div>
                 
                 <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" required>
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="password">Mot de passe</label>
+                    <label for="password">Mot de passe *</label>
                     <div class="password-input">
-                        <input type="password" id="password" required minlength="6">
+                        <input type="password" id="password" name="password" required minlength="6">
                         <button type="button" class="toggle-password" onclick="togglePassword('password')">
                             <i class="fas fa-eye"></i>
                         </button>
@@ -55,9 +55,9 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="confirmPassword">Confirmer le mot de passe</label>
+                    <label for="confirmPassword">Confirmer le mot de passe *</label>
                     <div class="password-input">
-                        <input type="password" id="confirmPassword" required>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
                         <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')">
                             <i class="fas fa-eye"></i>
                         </button>
@@ -66,8 +66,8 @@
                 
                 <div class="form-options">
                     <label class="checkbox">
-                        <input type="checkbox" id="terms" required>
-                        <span>J'accepte les <a href="#">Conditions d'utilisation</a> et la <a href="#">Politique de confidentialité</a></span>
+                        <input type="checkbox" id="terms" name="terms" required>
+                        <span>J'accepte les <a href="#">Conditions d'utilisation</a> et la <a href="#">Politique de confidentialité</a> *</span>
                     </label>
                     
                     <label class="checkbox">
@@ -90,19 +90,59 @@
             </form>
             
             <div class="auth-footer">
-                <p>En vous inscrivant, vous acceptez nos conditions d'utilisation</p>
+                <p>* Champs obligatoires</p>
             </div>
         </div>
     </div>
 
     <script src="../js/api.js"></script>
+    <script src="../js/notifications.js"></script>
     <script src="../js/auth.js"></script>
     <script>
-        // Fonction d'inscription
-        async function register(event) {
-            event.preventDefault();
-            await AuthManager.register(event);
-        }
+        // Initialiser les notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            // Vérifier si déjà connecté
+            if (AuthManager.isAuthenticated()) {
+                AppNotification.info('Vous êtes déjà connecté');
+                setTimeout(() => {
+                    window.location.href = '../../public/index.html';
+                }, 1500);
+                return;
+            }
+            
+            // Gérer le formulaire
+            const form = document.getElementById('registerForm');
+            if (form) {
+                form.addEventListener('submit', async function(event) {
+                    event.preventDefault();
+                    await AuthManager.register(event);
+                });
+            }
+            
+            // Vérifier s'il y a un message dans l'URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const message = urlParams.get('message');
+            const type = urlParams.get('type');
+            
+            if (message) {
+                switch(type) {
+                    case 'success':
+                        AppNotification.success(message);
+                        break;
+                    case 'error':
+                        AppNotification.error(message);
+                        break;
+                    default:
+                        AppNotification.info(message);
+                }
+                
+                // Nettoyer l'URL
+                const url = new URL(window.location);
+                url.searchParams.delete('message');
+                url.searchParams.delete('type');
+                window.history.replaceState({}, '', url);
+            }
+        });
         
         // Toggle password visibility
         function togglePassword(inputId) {
@@ -117,13 +157,6 @@
                 toggleBtn.className = 'fas fa-eye';
             }
         }
-        
-        // Vérifier si déjà connecté
-        document.addEventListener('DOMContentLoaded', function() {
-            if (AuthManager.isAuthenticated()) {
-                window.location.href = '../../index.html';
-            }
-        });
     </script>
 </body>
 </html>

@@ -1,108 +1,156 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Connexion - Coworking Manager</title>
-    <link rel="stylesheet" href="../css/login-signup.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="auth-page">
+    <link rel="stylesheet" href="../css/login-signup.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body class="auth-page">
     <div class="auth-container">
-        <div class="auth-card">
-            <div class="auth-header">
-                <a href="../../public/index.html" class="back-btn">
-                    <i class="fas fa-arrow-left"></i>
-                </a>
-                <h1>Connexion</h1>
-                <p>Accédez à votre espace personnel</p>
-            </div>
-            
-            <form id="loginForm" onsubmit="login(event)" class="auth-form">
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">Mot de passe</label>
-                    <div class="password-input">
-                        <input type="password" id="password" required>
-                        <button type="button" class="toggle-password" onclick="togglePassword('password')">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="form-options">
-                    <label class="checkbox">
-                        <input type="checkbox" id="remember">
-                        <span>Se souvenir de moi</span>
-                    </label>
-                    <a href="#" class="forgot-password">Mot de passe oublié ?</a>
-                </div>
-                
-                <button type="submit" class="btn btn-primary btn-block">
-                    <i class="fas fa-sign-in-alt"></i> Se connecter
-                </button>
-                
-                <div class="auth-divider">
-                    <span>ou</span>
-                </div>
-                
-                <a href="register.html" class="btn btn-outline btn-block">
-                    <i class="fas fa-user-plus"></i> Créer un compte
-                </a>
-            </form>
-            
-            <div class="auth-footer">
-                <p>En vous connectant, vous acceptez nos <a href="#">Conditions d'utilisation</a> et notre <a href="#">Politique de confidentialité</a></p>
-            </div>
+      <div class="auth-card">
+        <div class="auth-header">
+          <a href="../../public/index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+          </a>
+          <h1>Connexion</h1>
+          <p>Accédez à votre espace personnel</p>
         </div>
-        
-        <div class="auth-side">
-            <div class="auth-side-content">
-                <h2>Bienvenue sur Coworking Manager</h2>
-                <p>Gérez vos espaces de coworking, découvrez de nouveaux lieux et connectez-vous avec la communauté.</p>
-                <ul class="features-list">
-                    <li><i class="fas fa-check"></i> Gérez vos espaces</li>
-                    <li><i class="fas fa-check"></i> Ajoutez aux favoris</li>
-                    <li><i class="fas fa-check"></i> Scraping automatique</li>
-                    <li><i class="fas fa-check"></i> Statistiques détaillées</li>
-                </ul>
+
+        <form id="loginForm" class="auth-form">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <div class="password-input">
+              <input type="password" id="password" name="password" required />
+              <button
+                type="button"
+                class="toggle-password"
+                onclick="togglePassword('password')"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
             </div>
+          </div>
+
+          <div class="form-options">
+            <label class="checkbox">
+              <input type="checkbox" id="remember" />
+              <span>Se souvenir de moi</span>
+            </label>
+            <a href="#" class="forgot-password">Mot de passe oublié ?</a>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fas fa-sign-in-alt"></i> Se connecter
+          </button>
+
+          <div class="auth-divider">
+            <span>ou</span>
+          </div>
+
+          <a href="register.html" class="btn btn-outline btn-block">
+            <i class="fas fa-user-plus"></i> Créer un compte
+          </a>
+        </form>
+
+        <div class="auth-footer">
+          <p>
+            En vous connectant, vous acceptez nos
+            <a href="#">Conditions d'utilisation</a> et notre
+            <a href="#">Politique de confidentialité</a>
+          </p>
         </div>
+      </div>
+
+      <div class="auth-side">
+        <div class="auth-side-content">
+          <h2>Bienvenue sur Coworking Manager</h2>
+          <p>
+            Gérez vos espaces de coworking, découvrez de nouveaux lieux et
+            connectez-vous avec la communauté.
+          </p>
+          <ul class="features-list">
+            <li><i class="fas fa-check"></i> Gérez vos espaces</li>
+            <li><i class="fas fa-check"></i> Ajoutez aux favoris</li>
+            <li><i class="fas fa-check"></i> Scraping automatique</li>
+            <li><i class="fas fa-check"></i> Statistiques détaillées</li>
+          </ul>
+        </div>
+      </div>
     </div>
 
     <script src="../js/api.js"></script>
+    <script src="../js/notifications.js"></script>
     <script src="../js/auth.js"></script>
     <script>
-        // Fonction de connexion
-        async function login(event) {
+      // Initialiser les notifications
+      document.addEventListener("DOMContentLoaded", function () {
+        // Vérifier si déjà connecté
+        if (AuthManager.isAuthenticated()) {
+          AppNotification.info("Vous êtes déjà connecté");
+          setTimeout(() => {
+            window.location.href = "../../public/index.html";
+          }, 1500);
+          return;
+        }
+
+        // Gérer le formulaire
+        const form = document.getElementById("loginForm");
+        if (form) {
+          form.addEventListener("submit", async function (event) {
             event.preventDefault();
             await AuthManager.login(event);
+          });
         }
-        
-        // Toggle password visibility
-        function togglePassword(inputId) {
-            const input = document.getElementById(inputId);
-            const toggleBtn = input.parentElement.querySelector('.toggle-password i');
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                toggleBtn.className = 'fas fa-eye-slash';
-            } else {
-                input.type = 'password';
-                toggleBtn.className = 'fas fa-eye';
-            }
+
+        // Vérifier s'il y a un message dans l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const message = urlParams.get("message");
+        const type = urlParams.get("type");
+
+        if (message) {
+          switch (type) {
+            case "success":
+              AppNotification.success(message);
+              break;
+            case "error":
+              AppNotification.error(message);
+              break;
+            default:
+              AppNotification.info(message);
+          }
+
+          // Nettoyer l'URL
+          const url = new URL(window.location);
+          url.searchParams.delete("message");
+          url.searchParams.delete("type");
+          window.history.replaceState({}, "", url);
         }
-        
-        // Vérifier si déjà connecté
-        document.addEventListener('DOMContentLoaded', function() {
-            if (AuthManager.isAuthenticated()) {
-                window.location.href = '../../index.html';
-            }
-        });
+      });
+
+      // Toggle password visibility
+      function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        const toggleBtn =
+          input.parentElement.querySelector(".toggle-password i");
+
+        if (input.type === "password") {
+          input.type = "text";
+          toggleBtn.className = "fas fa-eye-slash";
+        } else {
+          input.type = "password";
+          toggleBtn.className = "fas fa-eye";
+        }
+      }
     </script>
-</body>
+  </body>
 </html>
