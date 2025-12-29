@@ -27,6 +27,7 @@ const corsOptions = {
     optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Enable pre-flight across-the-board
 
 // Middleware pour parser le JSON
 app.use(express.json());
