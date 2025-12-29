@@ -190,7 +190,9 @@ class AuthManager {
     AppNotification.success("Vous avez été déconnecté avec succès");
 
     setTimeout(() => {
-      window.location.href = "index.html";
+      // Redirection dynamique selon la page actuelle
+      const isPagesDir = window.location.pathname.includes('/pages/');
+      window.location.href = isPagesDir ? "../../public/index.html" : "index.html";
     }, 1000);
   }
 
@@ -332,12 +334,15 @@ class AuthManager {
   }
 
   // Protéger les routes
-  static requireAuth(redirectTo = "src/pages/login.html") {
+  static requireAuth() {
     if (!this.isAuthenticated()) {
       // Notification d'information
       AppNotification.info("Veuillez vous connecter pour accéder à cette page");
 
-      // Redirection
+      // Redirection dynamique
+      const isPagesDir = window.location.pathname.includes('/pages/');
+      const redirectTo = isPagesDir ? "login.html" : "../src/pages/login.html";
+
       setTimeout(() => {
         window.location.href = redirectTo;
       }, 1500);
@@ -356,16 +361,19 @@ class AuthManager {
         // Mettre à jour les données locales
         const currentUser = this.getCurrentUser();
         const updatedUser = { ...currentUser, ...updateData };
+        // Remove password from local storage if present in updateData (security)
+        delete updatedUser.password; 
+        
         localStorage.setItem("user", JSON.stringify(updatedUser));
 
-        // Notification de succès
-        AppNotification.success("Profil mis à jour avec succès");
+        // Mettre à jour l'UI immédiatement sans rechargement
+        this.updateUI(true, updatedUser);
 
         return response.data;
       }
     } catch (error) {
       console.error("Update profile error:", error);
-      AppNotification.error("Erreur lors de la mise à jour du profil");
+      this.showMessage("Erreur lors de la mise à jour du profil", 'error'); // Use internal method
       throw error;
     }
   }

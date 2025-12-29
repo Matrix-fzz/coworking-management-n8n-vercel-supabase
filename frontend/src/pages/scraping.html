@@ -6,6 +6,7 @@
     <title>Scraping Automatique - Coworking Manager</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar">
@@ -14,17 +15,20 @@
                 <i class="fas fa-building"></i>
                 <span>Coworking Manager</span>
             </a>
-            <div class="nav-links">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="nav-links" id="navLinks">
                 <a href="../../public/index.html"><i class="fas fa-home"></i> Accueil</a>
                 <a href="favorites.html"><i class="fas fa-heart"></i> Mes Favoris</a>
                 <a href="scraping.html" class="active"><i class="fas fa-robot"></i> Scraping</a>
                 <div class="user-section" id="userSection">
-                    <div class="user-info">
+                    <a href="profile.html" class="user-info" title="Gérer mon profil">
                         <i class="fas fa-user-circle"></i>
                         <span id="usernameDisplay"></span>
-                    </div>
+                    </a>
                     <button onclick="logout()" class="btn btn-danger btn-sm">
-                        <i class="fas fa-sign-out-alt"></i> Déconnexion
+                        <i class="fas fa-sign-out-alt"></i>
                     </button>
                 </div>
             </div>
@@ -32,23 +36,26 @@
     </nav>
 
     <main class="container">
-        <div class="page-header">
+        <div class="page-header center-text" style="text-align: center; margin-bottom: 3rem;">
             <h1><i class="fas fa-robot"></i> Scraping Automatique</h1>
-            <p>Scrapez automatiquement les espaces de coworking depuis Google Maps</p>
+            <p>Recherchez et importez automatiquement des espaces de coworking depuis Google Maps</p>
         </div>
 
         <div class="scraping-section">
-            <div class="scraping-card">
-                <div class="scraping-header">
-                    <h2><i class="fas fa-play-circle"></i> Lancer un scraping</h2>
-                    <p>Remplissez les champs ci-dessous pour commencer</p>
+            <div class="profile-card" style="margin-bottom: 2rem;">
+                <div class="scraping-header" style="margin-bottom: 24px; text-align: left;">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 8px;"><i class="fas fa-play-circle text-primary"></i> Lancer une recherche</h2>
+                    <p style="margin-bottom: 0;">Configurez votre recherche pour trouver de nouveaux espaces.</p>
                 </div>
                 
                 <form id="scrapingForm" onsubmit="triggerScraping(event)">
-                    <div class="form-row">
+                    <div class="form-grid">
                         <div class="form-group">
-                            <label for="scrapingCity">Ville *</label>
-                            <input type="text" id="scrapingCity" required list="citiesList">
+                            <label for="scrapingCity">Ville cible</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <input type="text" id="scrapingCity" required list="citiesList" placeholder="Ex: Casablanca">
+                            </div>
                             <datalist id="citiesList">
                                 <option value="Casablanca">
                                 <option value="Marrakech">
@@ -60,44 +67,42 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="scrapingKeyword">Mot-clé *</label>
-                            <input type="text" id="scrapingKeyword" 
-                                   value="coworking space" 
-                                   required>
-                            <small>Ex: coworking space, espace de coworking, bureau partagé</small>
+                            <label for="scrapingKeyword">Mots-clés</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="scrapingKeyword" value="coworking space" required placeholder="Ex: coworking, bureaux">
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="maxResults">Nombre maximum de résultats</label>
-                        <input type="range" id="maxResults" min="10" max="100" value="20">
-                        <span id="resultsValue">20 résultats</span>
+                    <div class="form-group" style="margin-top: 20px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <label for="maxResults">Nombre de résultats</label>
+                            <span id="resultsValue" style="font-weight: 600; color: var(--primary-color);">20 résultats</span>
+                        </div>
+                        <input type="range" id="maxResults" min="10" max="100" value="20" step="10">
                     </div>
                     
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-play"></i> Lancer le scraping
+                    <div class="form-actions" style="margin-top: 30px; display: flex; justify-content: flex-end;">
+                        <button type="submit" class="btn btn-primary btn-large">
+                            <i class="fas fa-rocket"></i> Lancer le scraping
                         </button>
                     </div>
                 </form>
-                
-                <div class="scraping-info">
-                    <h3><i class="fas fa-info-circle"></i> Comment ça marche ?</h3>
-                    <ol>
-                        <li>Notre robot recherche les espaces de coworking sur Google Maps</li>
-                        <li>Il extrait les informations : nom, adresse, téléphone, site web, etc.</li>
-                        <li>Les données sont sauvegardées dans un Google Sheet</li>
-                        <li>Vous recevez le lien vers le Google Sheet généré</li>
-                    </ol>
-                </div>
             </div>
-            
-            <div class="scraping-results">
-                <h2><i class="fas fa-history"></i> Historique des scrapings</h2>
+
+             <div class="profile-card" style="padding: 24px;">
+                <h3 style="font-size: 1.25rem; margin-bottom: 16px;"><i class="fas fa-history"></i> Historique des recherches</h3>
                 <div id="scrapingHistory">
-                    <!-- L'historique sera chargé ici -->
+                     <!-- L'historique sera chargé ici -->
+                    <div class="loading-spinner" style="text-align: center; color: var(--gray-color);">
+                        <i class="fas fa-spinner fa-spin"></i> Chargement...
+                    </div>
                 </div>
             </div>
+
+            <!-- Container for results -->
+            <div id="scrapedPlacesResultsContainer"></div>
         </div>
     </main>
 
@@ -129,6 +134,16 @@
             const city = document.getElementById('scrapingCity').value;
             const keyword = document.getElementById('scrapingKeyword').value;
             const maxResults = document.getElementById('maxResults').value;
+
+            // Show loading state
+             const submitBtn = document.querySelector('#scrapingForm button[type="submit"]');
+             const originalBtnText = submitBtn.innerHTML;
+             submitBtn.disabled = true;
+             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scraping en cours...';
+
+             // Clear previous results
+             const resultsContainer = document.getElementById('scrapedPlacesResultsContainer');
+             if(resultsContainer) resultsContainer.innerHTML = '';
             
             try {
                 const response = await CoworkingApi.triggerScraping({
@@ -138,7 +153,15 @@
                 });
                 
                 if (response.success) {
-                    AuthManager.showMessage('Scraping lancé avec succès !', 'success');
+                    AuthManager.showMessage(response.message || 'Scraping terminé avec succès !', 'success');
+                    
+                    // Display results if available
+                    if (response.data.places && response.data.places.length > 0) {
+                        displayScrapedResults(response.data.places);
+                    } else {
+                         displayNoResults();
+                    }
+
                     if (response.data.sheetUrl) {
                         setTimeout(() => {
                             window.open(response.data.sheetUrl, '_blank');
@@ -149,7 +172,106 @@
             } catch (error) {
                 console.error('Scraping error:', error);
                 AuthManager.showMessage(error.message || 'Erreur lors du scraping', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
             }
+        }
+
+        // Display no results
+        function displayNoResults() {
+            const container = document.getElementById('scrapedPlacesResultsContainer');
+            container.innerHTML = `
+                <div class="profile-card" style="margin-top: 2rem; text-align: center; padding: 40px;">
+                    <i class="fas fa-search" style="font-size: 3rem; color: var(--light-gray); margin-bottom: 20px;"></i>
+                    <h3>Aucun résultat trouvé</h3>
+                    <p>Essayez de modifier votre ville ou vos mots-clés.</p>
+                </div>
+            `;
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Afficher les résultats du scraping
+        function displayScrapedResults(places) {
+            const container = document.getElementById('scrapedPlacesResultsContainer');
+            
+            let html = `
+                <div style="margin-top: 3rem;">
+                    <div class="section-headers" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <h2 style="font-size: 1.75rem;"><i class="fas fa-check-circle text-success"></i> Résultats (${places.length})</h2>
+                        <span class="badge badge-success">Nouveaux</span>
+                    </div>
+                
+                    <div class="places-grid">
+            `;
+
+            places.forEach(place => {
+                const data = place.json || place; 
+                
+                // Fallback image logic
+                let imageHtml = '';
+                if (data.image) {
+                    imageHtml = `<img src="${data.image}" alt="${data.title || 'Lieu'}" class="place-image" onerror="this.parentElement.innerHTML='<div class=\'place-placeholder\'><i class=\'fas fa-building\'></i></div>'">`;
+                } else {
+                    imageHtml = `<div class="place-placeholder"><i class="fas fa-building"></i></div>`;
+                }
+
+                html += `
+                    <div class="place-card">
+                        <div class="place-image-wrapper">
+                            ${imageHtml}
+                        </div>
+                        <div class="place-content">
+                            <div class="place-header">
+                                <h3 class="place-title">${data.title || data.business_name || 'Sans nom'}</h3>
+                                ${data.rating ? `
+                                <div class="place-rating">
+                                    <i class="fas fa-star" style="margin-right: 4px;"></i> ${data.rating}
+                                </div>` : ''}
+                            </div>
+                            
+                            <div class="place-meta">
+                                <div class="place-meta-item">
+                                    <i class="fas fa-map-marker-alt"></i> 
+                                    <span>${data.address || 'Adresse non disponible'}</span>
+                                </div>
+                                ${data.phone && data.phone !== "N/A" ? `
+                                <div class="place-meta-item">
+                                    <i class="fas fa-phone"></i> 
+                                    <span>${data.phone}</span>
+                                </div>` : ''}
+                                
+                                ${data.type || data.category ? `
+                                <span class="place-tag">${data.type || data.category}</span>
+                                ` : ''}
+                            </div>
+                            
+                            <div class="place-footer">
+                                ${data.google_maps_link || data.place_id ? 
+                                    `<a href="${data.google_maps_link || 'https://www.google.com/maps/place/?q=place_id:' + data.place_id}" target="_blank" class="btn-place outline">
+                                        <i class="fas fa-map-marked-alt"></i> Maps
+                                    </a>` : '<button disabled class="btn-place outline" style="opacity:0.5;">No Maps</button>'
+                                }
+                                ${data.website && data.website !== "N/A" ? 
+                                    `<a href="${data.website}" target="_blank" class="btn-place website">
+                                        <i class="fas fa-globe"></i> Site Web
+                                    </a>` : 
+                                    `<button disabled class="btn-place outline" style="opacity: 0.5; cursor: not-allowed;">
+                                        <i class="fas fa-globe"></i> Site Web
+                                    </button>`
+                                }
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            
+            container.innerHTML = html;
+            
+            // Scroll to results
+            container.scrollIntoView({ behavior: 'smooth' });
         }
         
         // Charger l'historique
@@ -167,6 +289,7 @@
                 }
             } catch (error) {
                 console.error('History load error:', error);
+                document.getElementById('scrapingHistory').innerHTML = '<p class="text-error">Erreur de chargement</p>';
             }
         }
         
@@ -177,9 +300,9 @@
             
             if (!scrapings || scrapings.length === 0) {
                 container.innerHTML = `
-                    <div class="no-history">
-                        <i class="fas fa-clock"></i>
-                        <p>Aucun scraping effectué pour le moment</p>
+                    <div class="no-history" style="text-align: center; color: var(--gray-color); padding: 20px;">
+                        <i class="fas fa-clock" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                        <p>Aucune recherche récente.</p>
                     </div>
                 `;
                 return;
@@ -188,17 +311,21 @@
             container.innerHTML = scrapings.map(scraping => `
                 <div class="history-item">
                     <div class="history-header">
-                        <span class="history-city">${scraping.city}</span>
+                        <span class="history-city"><i class="fas fa-map-pin text-primary"></i> ${scraping.city}</span>
                         <span class="history-status status-${scraping.status}">${scraping.status}</span>
                     </div>
                     <div class="history-body">
-                        <p><i class="fas fa-search"></i> ${scraping.keyword}</p>
-                        <p><i class="fas fa-calendar"></i> ${new Date(scraping.created_at).toLocaleDateString('fr-FR')}</p>
-                        ${scraping.sheet_url ? `
-                            <a href="${scraping.sheet_url}" target="_blank" class="btn btn-outline btn-sm">
-                                <i class="fas fa-external-link-alt"></i> Voir le Google Sheet
-                            </a>
-                        ` : ''}
+                        <p><i class="fas fa-search fa-sm text-gray"></i> ${scraping.keyword}</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                             <span style="font-size: 0.8rem; color: var(--gray-color);">
+                                <i class="far fa-calendar-alt"></i> ${new Date(scraping.created_at).toLocaleDateString('fr-FR')}
+                             </span>
+                             ${scraping.sheet_url ? `
+                                <a href="${scraping.sheet_url}" target="_blank" style="font-size: 0.85rem; color: var(--primary-color); font-weight: 600;">
+                                    Ouvrir Sheet <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            ` : ''}
+                        </div>
                     </div>
                 </div>
             `).join('');

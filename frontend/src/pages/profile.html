@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Profil - Coworking Manager</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../../public/index.html" class="logo">
+                <i class="fas fa-building"></i>
+                <span>Coworking Manager</span>
+            </a>
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="nav-links" id="navLinks">
+                <a href="../../public/index.html"><i class="fas fa-home"></i> Accueil</a>
+                <a href="favorites.html"><i class="fas fa-heart"></i> Mes Favoris</a>
+                <a href="scraping.html"><i class="fas fa-robot"></i> Scraping</a>
+                <div class="user-section" id="userSection">
+                    <a href="profile.html" class="user-info active" title="Gérer mon profil">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="usernameDisplay"></span>
+                    </a>
+                    <button onclick="logout()" class="btn btn-danger btn-sm">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-user-circle"></i> Mon Profil</h1>
+            <p>Gérez vos informations personnelles et sécurisez votre compte</p>
+        </div>
+
+        <div class="profile-container">
+            <div class="profile-card">
+                <form id="profileForm">
+                    <h4 class="section-title" style="margin-bottom: 20px; color: var(--primary-color);">Informations Personnelles</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="username">Nom d'utilisateur</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="username" name="username" required placeholder="Votre nom d'utilisateur">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Adresse email</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="email" name="email" required placeholder="exemple@email.com">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid var(--light-gray); margin: 30px 0;">
+                    
+                    <h4 class="section-title" style="margin-bottom: 20px; color: var(--primary-color);">Sécurité du Compte</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="password">Nouveau mot de passe</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="password" name="password" minlength="6" placeholder="Laisser vide pour garder l'actuel">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirmer le mot de passe</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="confirmPassword" name="confirmPassword" minlength="6" placeholder="Confirmer le nouveau mot de passe">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions" style="margin-top: 40px; justify-content: flex-end;">
+                        <button type="submit" class="btn btn-primary btn-large">
+                            <i class="fas fa-save"></i> Enregistrer les modifications
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+     <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Coworking Manager</h3>
+                    <p>La plateforme de gestion d'espaces de coworking au Maroc</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Liens rapides</h4>
+                    <a href="index.html">Accueil</a>
+                    <a href="../src/pages/favorites.html">Mes Favoris</a>
+                    <a href="../src/pages/scraping.html">Scraping Automatique</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-envelope"></i> contact@coworkingmanager.ma</p>
+                    <p><i class="fas fa-phone"></i> +212 5 XX XX XX XX</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Coworking Manager By Matrix Fed(FAZAZI). Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="../js/notifications.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            if (!AuthManager.requireAuth()) return;
+            AuthManager.checkAuth();
+
+            // Charger les données du profil
+            try {
+                const response = await CoworkingApi.getProfile();
+                if (response.success && response.data.user) {
+                    const user = response.data.user;
+                    document.getElementById('username').value = user.username;
+                    document.getElementById('email').value = user.email;
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                AuthManager.showMessage('Erreur lors du chargement du profil', 'error');
+            }
+
+            // Gérer la soumission du formulaire
+            document.getElementById('profileForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                
+                // Récupérer les données
+                const username = document.getElementById('username').value;
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+
+                // Validation
+                if (password && password !== confirmPassword) {
+                    AuthManager.showMessage('Les mots de passe ne correspondent pas', 'warning');
+                    return;
+                }
+
+                const updateData = { username, email };
+                if (password) {
+                    updateData.password = password;
+                }
+
+                try {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
+                    
+                    const response = await AuthManager.updateProfile(updateData);
+                    
+                    AuthManager.showMessage('Profil mis à jour avec succès', 'success');
+                    
+                    // Clear password fields
+                    document.getElementById('password').value = '';
+                    document.getElementById('confirmPassword').value = '';
+
+                    // Update local form values if username/email changed
+                    if (updateData.username) document.getElementById('username').value = updateData.username;
+                    if (updateData.email) document.getElementById('email').value = updateData.email;
+                } catch (error) {
+                    console.error('Update error:', error);
+                    let msg = error.message || 'Erreur lors de la mise à jour';
+                    if (msg.includes('email')) msg = 'Cet email est déjà utilisé';
+                    AuthManager.showMessage(msg, 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
