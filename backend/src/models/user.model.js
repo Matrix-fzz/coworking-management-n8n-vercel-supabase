@@ -2,86 +2,85 @@ const pool = require('../utils/database');
 const bcrypt = require('bcryptjs');
 
 class User {
-    // Trouver un utilisateur par email
+    // Find user by email
     static async findByEmail(email) {
         try {
-            const [rows] = await pool.execute(
-                'SELECT * FROM users WHERE email = ?',
+            const result = await pool.query(
+                'SELECT * FROM users WHERE email = $1',
                 [email]
             );
-            return rows[0] || null;
+            return result.rows[0] || null;
         } catch (error) {
             console.error('Error finding user by email:', error);
             throw error;
         }
     }
 
-    // Trouver un utilisateur par ID
+    // Find user by ID
     static async findById(id) {
         try {
-            const [rows] = await pool.execute(
-                'SELECT id, username, email, created_at FROM users WHERE id = ?',
+            const result = await pool.query(
+                'SELECT id, username, email, created_at FROM users WHERE id = $1',
                 [id]
             );
-            return rows[0] || null;
+            return result.rows[0] || null;
         } catch (error) {
             console.error('Error finding user by id:', error);
             throw error;
         }
     }
 
-    // Créer un nouvel utilisateur
+    // Create a new user
     static async create(userData) {
         const { username, email, password } = userData;
         
         try {
-            // Hasher le mot de passe
+            // Hash password
             const salt = await bcrypt.genSalt(10);
             const passwordHash = await bcrypt.hash(password, salt);
             
-            const [result] = await pool.execute(
-                'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)',
+            const result = await pool.query(
+                'INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3) RETURNING id, username, email, created_at',
                 [username, email, passwordHash]
             );
             
-            return {
-                id: result.insertId,
-                username,
-                email,
-                created_at: new Date()
-            };
+            return result.rows[0];
         } catch (error) {
             console.error('Error creating user:', error);
             throw error;
         }
     }
 
-    // Vérifier le mot de passe
+    // Verify password
     static async verifyPassword(password, hashedPassword) {
         return await bcrypt.compare(password, hashedPassword);
     }
 
-    // Mettre à jour un utilisateur
+    // Update a user
     static async update(id, updateData) {
         try {
             const fields = [];
             const values = [];
+            let paramIndex = 1;
             
             if (updateData.username) {
-                fields.push('username = ?');
+                fields.push(`username = $${paramIndex}`);
                 values.push(updateData.username);
+                paramIndex++;
             }
             
             if (updateData.email) {
-                fields.push('email = ?');
+                fields.push(`email = $${paramIndex}`);
                 values.push(updateData.email);
+                paramIndex++;
             }
             
             if (updateData.password) {
                 const salt = await bcrypt.genSalt(10);
                 const passwordHash = await bcrypt.hash(updateData.password, salt);
-                fields.push('password_hash = ?');
+                fields.push(`password_hash = $${paramIndex}`);
                 values.push(passwordHash);
+                paramIndex++;
             }
             
             if (fields.length === 0) {
@@ -90,26 +89,26 @@ class User {
             
             values.push(id);
             
-            const [result] = await pool.execute(
-                `UPDATE users SET ${fields.join(', ')} WHERE id = ?`,
+            const result = await pool.query(
+                `UPDATE users SET ${fields.join(', ')} WHERE id = $${paramIndex}`,
                 values
             );
             
-            return result.affectedRows > 0;
+            return result.rowCount > 0;
         } catch (error) {
             console.error('Error updating user:', error);
             throw error;
         }
     }
 
-    // Supprimer un utilisateur
+    // Delete a user
     static async delete(id) {
         try {
-            const [result] = await pool.execute(
-                'DELETE FROM users WHERE id = ?',
+            const result = await pool.query(
+                'DELETE FROM users WHERE id = $1',
                 [id]
             );
-            return result.affectedRows > 0;
+            return result.rowCount > 0;
         } catch (error) {
             console.error('Error deleting user:', error);
             throw error;

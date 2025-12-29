@@ -1,7 +1,7 @@
 const pool = require('../utils/database');
 
 class Workspace {
-    // Récupérer tous les espaces avec pagination
+    // Find all workspaces with pagination and filters
     static async findAll(page = 1, limit = 6, filters = {}) {
         try {
             const offset = (page - 1) * limit;
@@ -9,60 +9,68 @@ class Workspace {
             let countQuery = 'SELECT COUNT(*) as total FROM workspaces w WHERE 1=1';
             const values = [];
             const countValues = [];
+            let paramIndex = 1;
 
-            // Appliquer les filtres
+            // Apply filters
             if (filters.city) {
-                query += ' AND w.city LIKE ?';
-                countQuery += ' AND w.city LIKE ?';
+                query += ` AND w.city ILIKE $${paramIndex}`; // ILIKE for case-insensitive
+                countQuery += ` AND w.city ILIKE $${paramIndex}`;
                 values.push(`%${filters.city}%`);
                 countValues.push(`%${filters.city}%`);
+                paramIndex++;
             }
 
             if (filters.status) {
-                query += ' AND w.status = ?';
-                countQuery += ' AND w.status = ?';
+                query += ` AND w.status = $${paramIndex}`;
+                countQuery += ` AND w.status = $${paramIndex}`;
                 values.push(filters.status);
                 countValues.push(filters.status);
+                paramIndex++;
             }
 
             if (filters.minPrice) {
-                query += ' AND w.price_per_day >= ?';
-                countQuery += ' AND w.price_per_day >= ?';
+                query += ` AND w.price_per_day >= $${paramIndex}`;
+                countQuery += ` AND w.price_per_day >= $${paramIndex}`;
                 values.push(filters.minPrice);
                 countValues.push(filters.minPrice);
+                paramIndex++;
             }
 
             if (filters.maxPrice) {
-                query += ' AND w.price_per_day <= ?';
-                countQuery += ' AND w.price_per_day <= ?';
+                query += ` AND w.price_per_day <= $${paramIndex}`;
+                countQuery += ` AND w.price_per_day <= $${paramIndex}`;
                 values.push(filters.maxPrice);
                 countValues.push(filters.maxPrice);
+                paramIndex++;
             }
 
             if (filters.minCapacity) {
-                query += ' AND w.capacity >= ?';
-                countQuery += ' AND w.capacity >= ?';
+                query += ` AND w.capacity >= $${paramIndex}`;
+                countQuery += ` AND w.capacity >= $${paramIndex}`;
                 values.push(filters.minCapacity);
                 countValues.push(filters.minCapacity);
+                paramIndex++;
             }
 
             if (filters.amenities && Array.isArray(filters.amenities)) {
                 filters.amenities.forEach(amenity => {
-                    query += ' AND w.amenities LIKE ?';
-                    countQuery += ' AND w.amenities LIKE ?';
+                    query += ` AND w.amenities LIKE $${paramIndex}`;
+                    countQuery += ` AND w.amenities LIKE $${paramIndex}`;
                     values.push(`%${amenity}%`);
                     countValues.push(`%${amenity}%`);
+                    paramIndex++;
                 });
             }
 
             if (filters.search) {
-                query += ' AND (w.name LIKE ? OR w.city LIKE ? OR w.amenities LIKE ?)';
-                countQuery += ' AND (w.name LIKE ? OR w.city LIKE ? OR w.amenities LIKE ?)';
+                query += ` AND (w.name ILIKE $${paramIndex} OR w.city ILIKE $${paramIndex} OR w.amenities ILIKE $${paramIndex})`;
+                countQuery += ` AND (w.name ILIKE $${paramIndex} OR w.city ILIKE $${paramIndex} OR w.amenities ILIKE $${paramIndex})`;
                 values.push(`%${filters.search}%`, `%${filters.search}%`, `%${filters.search}%`);
                 countValues.push(`%${filters.search}%`, `%${filters.search}%`, `%${filters.search}%`);
+                paramIndex++;
             }
 
-            // Ajouter l'ordre et la pagination
+            // Ordering
             let orderByClause = 'ORDER BY w.created_at DESC'; // Default
 
             if (filters.sortBy) {
@@ -83,28 +91,33 @@ class Workspace {
                 }
             }
 
-            query += ` ${orderByClause} LIMIT ? OFFSET ?`;
+            query += ` ${orderByClause} LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
             values.push(limit, offset);
 
-            // Exécuter les requêtes
-            const [workspaces] = await pool.execute(query, values);
-            const [[countResult]] = await pool.execute(countQuery, countValues);
+            // Execute queries
+            const result = await pool.query(query, values);
+            const countResult = await pool.query(countQuery, countValues);
 
-            // Convertir les amenities de JSON string à array si nécessaire
-            const formattedWorkspaces = workspaces.map(workspace => {
+            // Format workspaces
+            const formattedWorkspaces = result.rows.map(workspace => {
                 try {
-                    workspace.amenities = JSON.parse(workspace.amenities);
+                    // Check if amenities is already an object/array (pg might parse JSON automatically if column was JSON type, but here it is TEXT)
+                    if (typeof workspace.amenities === 'string') {
+                         workspace.amenities = JSON.parse(workspace.amenities);
+                    }
                 } catch (e) {
-                    // Si ce n'est pas du JSON valide, le garder tel quel
+                    // keep as is
                 }
                 return workspace;
             });
 
+            const total = parseInt(countResult.rows[0].total);
+
             return {
                 workspaces: formattedWorkspaces,
-                total: countResult.total,
+                total: total,
                 page: parseInt(page),
-                totalPages: Math.ceil(countResult.total / limit)
+                totalPages: Math.ceil(total / limit)
             };
         } catch (error) {
             console.error('Error finding workspaces:', error);
@@ -112,87 +125,90 @@ class Workspace {
         }
     }
 
-    // Trouver un espace par ID
+    // Find workspace by ID
     static async findById(id) {
         try {
-            const [rows] = await pool.execute(
-                'SELECT w.*, u.username as owner_name FROM workspaces w JOIN users u ON w.user_id = u.id WHERE w.id = ?',
+            const result = await pool.query(
+                'SELECT w.*, u.username as owner_name FROM workspaces w JOIN users u ON w.user_id = u.id WHERE w.id = $1',
                 [id]
             );
             
-            if (rows[0]) {
+            if (result.rows[0]) {
                 try {
-                    rows[0].amenities = JSON.parse(rows[0].amenities);
+                    if (typeof result.rows[0].amenities === 'string') {
+                        result.rows[0].amenities = JSON.parse(result.rows[0].amenities);
+                    }
                 } catch (e) {
-                    // Si ce n'est pas du JSON valide
+                    // keep as is
                 }
             }
             
-            return rows[0] || null;
+            return result.rows[0] || null;
         } catch (error) {
             console.error('Error finding workspace by id:', error);
             throw error;
         }
     }
 
-    // Créer un nouvel espace
+    // Create a new workspace
     static async create(workspaceData) {
         const { name, capacity, price_per_day, city, amenities, status, image_url, user_id } = workspaceData;
         
         try {
-            // Convertir amenities en JSON string si c'est un array
             const amenitiesJson = Array.isArray(amenities) 
                 ? JSON.stringify(amenities) 
                 : amenities;
             
-            const [result] = await pool.execute(
-                'INSERT INTO workspaces (name, capacity, price_per_day, city, amenities, status, image_url, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            const result = await pool.query(
+                'INSERT INTO workspaces (name, capacity, price_per_day, city, amenities, status, image_url, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
                 [name, capacity, price_per_day, city, amenitiesJson, status, image_url, user_id]
             );
             
-            return {
-                id: result.insertId,
-                ...workspaceData,
-                amenities: Array.isArray(amenities) ? amenities : JSON.parse(amenities)
-            };
+            const newWorkspace = result.rows[0];
+            
+             try {
+                if (typeof newWorkspace.amenities === 'string') {
+                    newWorkspace.amenities = JSON.parse(newWorkspace.amenities);
+                }
+            } catch (e) { }
+
+            return newWorkspace;
         } catch (error) {
             console.error('Error creating workspace:', error);
             throw error;
         }
     }
 
-    // Mettre à jour un espace
+    // Update a workspace
     static async update(id, updateData, userId) {
         try {
-            // Vérifier que l'utilisateur est le propriétaire
-            const [workspace] = await pool.execute(
-                'SELECT user_id FROM workspaces WHERE id = ?',
+            // Check ownership
+            const workspaceResult = await pool.query(
+                'SELECT user_id FROM workspaces WHERE id = $1',
                 [id]
             );
             
-            if (!workspace[0]) {
+            if (!workspaceResult.rows[0]) {
                 throw new Error('Workspace not found');
             }
             
-            if (!workspace[0]) {
-                throw new Error('Workspace not found');
-            }
-            
-            // Ownership check removed for community editing
-            // if (workspace[0].user_id !== userId) { ... }
+            // Ownership check (uncomment if strict ownership is enforced again)
+            // if (workspaceResult.rows[0].user_id !== userId) { ... }
             
             const fields = [];
             const values = [];
+            let paramIndex = 1;
             
             const allowedFields = ['name', 'capacity', 'price_per_day', 'city', 'amenities', 'status', 'image_url'];
             
             allowedFields.forEach(field => {
                 if (updateData[field] !== undefined) {
+                    fields.push(`${field} = $${paramIndex}`);
+                    paramIndex++;
+                    
                     if (field === 'amenities' && Array.isArray(updateData[field])) {
-                        fields.push(`${field} = ?`);
                         values.push(JSON.stringify(updateData[field]));
                     } else {
-                        fields.push(`${field} = ?`);
                         values.push(updateData[field]);
                     }
                 }
@@ -204,80 +220,74 @@ class Workspace {
             
             values.push(id);
             
-            const [result] = await pool.execute(
-                `UPDATE workspaces SET ${fields.join(', ')} WHERE id = ?`,
+            const result = await pool.query(
+                `UPDATE workspaces SET ${fields.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
                 values
             );
             
-            return result.affectedRows > 0;
+            return result.rowCount > 0;
         } catch (error) {
             console.error('Error updating workspace:', error);
             throw error;
         }
     }
 
-    // Supprimer un espace
+    // Delete a workspace
     static async delete(id, userId) {
         try {
-            // Vérifier que l'utilisateur est le propriétaire
-            const [workspace] = await pool.execute(
-                'SELECT user_id FROM workspaces WHERE id = ?',
+            const workspaceResult = await pool.query(
+                'SELECT user_id FROM workspaces WHERE id = $1',
                 [id]
             );
             
-            if (!workspace[0]) {
+            if (!workspaceResult.rows[0]) {
                 throw new Error('Workspace not found');
             }
             
-            if (!workspace[0]) {
-                throw new Error('Workspace not found');
-            }
-            
-            // Ownership check removed for community deletion
-            // if (workspace[0].user_id !== userId) { ... }
-            
-            const [result] = await pool.execute(
-                'DELETE FROM workspaces WHERE id = ?',
+            const result = await pool.query(
+                'DELETE FROM workspaces WHERE id = $1',
                 [id]
             );
             
-            return result.affectedRows > 0;
+            return result.rowCount > 0;
         } catch (error) {
             console.error('Error deleting workspace:', error);
             throw error;
         }
     }
 
-    // Récupérer les espaces d'un utilisateur
+    // Find workspaces by user ID
     static async findByUserId(userId, page = 1, limit = 10) {
         try {
             const offset = (page - 1) * limit;
             
-            const [workspaces] = await pool.execute(
-                'SELECT * FROM workspaces WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
+            const result = await pool.query(
+                'SELECT * FROM workspaces WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3',
                 [userId, limit, offset]
             );
             
-            const [[countResult]] = await pool.execute(
-                'SELECT COUNT(*) as total FROM workspaces WHERE user_id = ?',
+            const countResult = await pool.query(
+                'SELECT COUNT(*) as total FROM workspaces WHERE user_id = $1',
                 [userId]
             );
             
-            // Convertir amenities
-            const formattedWorkspaces = workspaces.map(workspace => {
+            const formattedWorkspaces = result.rows.map(workspace => {
                 try {
-                    workspace.amenities = JSON.parse(workspace.amenities);
+                     if (typeof workspace.amenities === 'string') {
+                        workspace.amenities = JSON.parse(workspace.amenities);
+                    }
                 } catch (e) {
-                    // Si ce n'est pas du JSON valide
                 }
                 return workspace;
             });
             
+            const total = parseInt(countResult.rows[0].total);
+
             return {
                 workspaces: formattedWorkspaces,
-                total: countResult.total,
+                total: total,
                 page: parseInt(page),
-                totalPages: Math.ceil(countResult.total / limit)
+                totalPages: Math.ceil(total / limit)
             };
         } catch (error) {
             console.error('Error finding workspaces by user id:', error);

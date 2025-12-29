@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coworking Manager - Gestion des Espaces de Coworking</title>
-    <link rel="stylesheet" href="../src/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -21,14 +21,14 @@
             </button>
             <div class="nav-links" id="navLinks">
                 <a href="index.html" class="active"><i class="fas fa-home"></i> Accueil</a>
-                <a href="../src/pages/favorites.html"><i class="fas fa-heart"></i> Mes Favoris</a>
-                <a href="../src/pages/scraping.html"><i class="fas fa-robot"></i> Scraping</a>
+                <a href="pages/favorites.html"><i class="fas fa-heart"></i> Mes Favoris</a>
+                <a href="pages/scraping.html"><i class="fas fa-robot"></i> Scraping</a>
                 <div class="auth-section" id="authSection">
-                    <a href="../src/pages/login.html" class="btn btn-outline"><i class="fas fa-sign-in-alt"></i> Connexion</a>
-                    <a href="../src/pages/register.html" class="btn btn-primary"><i class="fas fa-user-plus"></i> Inscription</a>
+                    <a href="pages/login.html" class="btn btn-outline"><i class="fas fa-sign-in-alt"></i> Connexion</a>
+                    <a href="pages/register.html" class="btn btn-primary"><i class="fas fa-user-plus"></i> Inscription</a>
                 </div>
                 <div class="user-section" id="userSection" style="display: none;">
-                    <a href="../src/pages/profile.html" class="user-info" title="Gérer mon profil">
+                    <a href="pages/profile.html" class="user-info" title="Gérer mon profil">
                         <i class="fas fa-user-circle"></i>
                         <span id="usernameDisplay"></span>
                     </a>
@@ -50,7 +50,7 @@
                     <a href="#workspaces" class="btn btn-primary btn-large">
                         <i class="fas fa-search"></i> Explorer les espaces
                     </a>
-                    <a href="../src/pages/register.html" class="btn btn-secondary btn-large">
+                    <a href="pages/register.html" class="btn btn-secondary btn-large">
                         <i class="fas fa-rocket"></i> Commencer gratuitement
                     </a>
                 </div>
@@ -208,8 +208,8 @@
                 <div class="footer-section">
                     <h4>Liens rapides</h4>
                     <a href="index.html">Accueil</a>
-                    <a href="../src/pages/favorites.html">Mes Favoris</a>
-                    <a href="../src/pages/scraping.html">Scraping Automatique</a>
+                    <a href="pages/favorites.html">Mes Favoris</a>
+                    <a href="pages/scraping.html">Scraping Automatique</a>
                 </div>
                 <div class="footer-section">
                     <h4>Contact</h4>
@@ -332,11 +332,11 @@
     </div>
 
     <!-- Scripts -->
-    <script src="../src/js/notifications.js"></script>
-    <script src="../src/js/api.js"></script>
-    <script src="../src/js/auth.js"></script>
-    <script src="../src/js/upload.js"></script>
-    <script src="../src/js/workspace.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/upload.js"></script>
+    <script src="js/workspace.js"></script>
     <script>
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {

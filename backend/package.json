@@ -4,24 +4,29 @@
   "description": "API for coworking spaces management",
   "main": "src/app.js",
   "scripts": {
-      "start": "node src/app.js",
+    "start": "node src/app.js",
     "dev": "nodemon src/app.js",
     "seed": "node scripts/seed.js",
     "reset-db": "node scripts/reset-db.js"
-    },
-  "keywords": ["coworking", "management", "api"],
+  },
+  "keywords": [
+    "coworking",
+    "management",
+    "api"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "express": "^5.2.1",
-    "mysql2": "^3.16.0",
+    "@supabase/supabase-js": "^2.89.0",
     "bcryptjs": "^3.0.3",
-    "jsonwebtoken": "^9.0.3",
-    "dotenv": "^17.2.3",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
     "express-validator": "^7.3.1",
-    "multer": "^2.0.2"
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.0.2",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"

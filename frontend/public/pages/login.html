@@ -14,7 +14,7 @@
     <div class="auth-container">
       <div class="auth-card">
         <div class="auth-header">
-          <a href="../../public/index.html" class="back-btn">
+          <a href="../index.html" class="back-btn">
             <i class="fas fa-arrow-left"></i>
           </a>
           <h1>Connexion</h1>
@@ -98,7 +98,7 @@
         if (AuthManager.isAuthenticated()) {
           AppNotification.info("Vous êtes déjà connecté");
           setTimeout(() => {
-            window.location.href = "../../public/index.html";
+            window.location.href = "../index.html";
           }, 1500);
           return;
         }

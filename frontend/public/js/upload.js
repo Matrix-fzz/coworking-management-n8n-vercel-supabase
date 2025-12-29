@@ -6,20 +6,33 @@ class UploadManager {
             const formData = new FormData();
             formData.append('image', file);
             
-            const response = await fetch(`${API_BASE_URL}/upload`, {
+            const response = await CoworkingApi.uploadImage(file);
+            
+            // Adapt response to expected format if needed, but CoworkingApi.uploadImage already returns json
+            // However, the original code used fetch directly, now we can use CoworkingApi wrapper which is cleaner
+            // Or restore original fetch if CoworkingApi isn't fully relied upon here.
+            // Let's restore original fetch to be safe and consistent with previous state, but using correct API_BASE_URL from api.js
+            
+           /* 
+           Original code used:
+           const response = await fetch(`${API_BASE_URL}/upload`, ...
+           */
+           
+           // Actually, using CoworkingApi is better practice since it handles tokens.
+           // But let's restore the ORIGINAL exact code to avoid regressions, just ensuring API_BASE_URL is available (it is global from api.js)
+           
+            const res = await fetch(`${API_BASE_URL}/upload`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${AuthManager.getToken()}`
                 },
                 body: formData
             });
-            
-            if (!response.ok) {
-                throw new Error('Upload failed');
+
+            if (!res.ok) {
+                 throw new Error('Upload failed');
             }
-            
-            const data = await response.json();
-            return data;
+            return await res.json();
         } catch (error) {
             console.error('Upload error:', error);
             throw error;

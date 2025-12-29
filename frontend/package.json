@@ -1,0 +1,12 @@
+{
+  "name": "coworking-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for Coworking Management",
+  "scripts": {
+    "start": "serve public",
+    "build": "echo 'No build step'"
+  },
+  "dependencies": {
+    "serve": "^14.2.0"
+  }
+}

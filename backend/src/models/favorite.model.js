@@ -1,98 +1,96 @@
 const pool = require('../utils/database');
 
 class Favorite {
-    // Ajouter aux favoris
+    // Add to favorites
     static async add(userId, workspaceId) {
         try {
-            // Vérifier si l'espace existe
-            const [workspace] = await pool.execute(
-                'SELECT id FROM workspaces WHERE id = ?',
+            // Check if workspace exists
+            const workspaceResult = await pool.query(
+                'SELECT id FROM workspaces WHERE id = $1',
                 [workspaceId]
             );
             
-            if (!workspace[0]) {
+            if (!workspaceResult.rows[0]) {
                 throw new Error('Workspace not found');
             }
             
-            // Vérifier si déjà en favoris
-            const [existing] = await pool.execute(
-                'SELECT id FROM favorites WHERE user_id = ? AND workspace_id = ?',
+            // Check if already favorite
+            const existingResult = await pool.query(
+                'SELECT id FROM favorites WHERE user_id = $1 AND workspace_id = $2',
                 [userId, workspaceId]
             );
             
-            if (existing[0]) {
+            if (existingResult.rows[0]) {
                 throw new Error('Already in favorites');
             }
             
-            const [result] = await pool.execute(
-                'INSERT INTO favorites (user_id, workspace_id) VALUES (?, ?)',
+            const result = await pool.query(
+                'INSERT INTO favorites (user_id, workspace_id) VALUES ($1, $2) RETURNING id, user_id, workspace_id, created_at',
                 [userId, workspaceId]
             );
             
-            return {
-                id: result.insertId,
-                user_id: userId,
-                workspace_id: workspaceId,
-                created_at: new Date()
-            };
+            return result.rows[0];
         } catch (error) {
             console.error('Error adding favorite:', error);
             throw error;
         }
     }
 
-    // Retirer des favoris
+    // Remove from favorites
     static async remove(userId, workspaceId) {
         try {
-            const [result] = await pool.execute(
-                'DELETE FROM favorites WHERE user_id = ? AND workspace_id = ?',
+            const result = await pool.query(
+                'DELETE FROM favorites WHERE user_id = $1 AND workspace_id = $2',
                 [userId, workspaceId]
             );
             
-            return result.affectedRows > 0;
+            return result.rowCount > 0;
         } catch (error) {
             console.error('Error removing favorite:', error);
             throw error;
         }
     }
 
-    // Récupérer les favoris d'un utilisateur
+    // Find favorites by user ID
     static async findByUserId(userId, page = 1, limit = 10) {
         try {
             const offset = (page - 1) * limit;
             
-            const [favorites] = await pool.execute(
+            const result = await pool.query(
                 `SELECT f.*, w.name, w.capacity, w.price_per_day, w.city, 
                         w.amenities, w.status, w.image_url, u.username as owner_name
                  FROM favorites f
                  JOIN workspaces w ON f.workspace_id = w.id
                  JOIN users u ON w.user_id = u.id
-                 WHERE f.user_id = ?
+                 WHERE f.user_id = $1
                  ORDER BY f.created_at DESC
-                 LIMIT ? OFFSET ?`,
+                 LIMIT $2 OFFSET $3`,
                 [userId, limit, offset]
             );
             
-            const [[countResult]] = await pool.execute(
-                'SELECT COUNT(*) as total FROM favorites WHERE user_id = ?',
+            const countResult = await pool.query(
+                'SELECT COUNT(*) as total FROM favorites WHERE user_id = $1',
                 [userId]
             );
             
-            // Convertir amenities
-            const formattedFavorites = favorites.map(favorite => {
+            // Convert amenities
+            const formattedFavorites = result.rows.map(favorite => {
                 try {
-                    favorite.amenities = JSON.parse(favorite.amenities);
+                     if (typeof favorite.amenities === 'string') {
+                        favorite.amenities = JSON.parse(favorite.amenities);
+                    }
                 } catch (e) {
-                    // Si ce n'est pas du JSON valide
                 }
                 return favorite;
             });
             
+            const total = parseInt(countResult.rows[0].total);
+
             return {
                 favorites: formattedFavorites,
-                total: countResult.total,
+                total: total,
                 page: parseInt(page),
-                totalPages: Math.ceil(countResult.total / limit)
+                totalPages: Math.ceil(total / limit)
             };
         } catch (error) {
             console.error('Error finding favorites:', error);
@@ -100,30 +98,30 @@ class Favorite {
         }
     }
 
-    // Vérifier si un espace est en favoris
+    // Check if workspace is favorite
     static async isFavorite(userId, workspaceId) {
         try {
-            const [rows] = await pool.execute(
-                'SELECT id FROM favorites WHERE user_id = ? AND workspace_id = ?',
+            const result = await pool.query(
+                'SELECT id FROM favorites WHERE user_id = $1 AND workspace_id = $2',
                 [userId, workspaceId]
             );
             
-            return rows.length > 0;
+            return result.rowCount > 0;
         } catch (error) {
             console.error('Error checking favorite:', error);
             throw error;
         }
     }
 
-    // Récupérer les IDs des favoris d'un utilisateur
+    // Get favorite IDs for user
     static async getFavoriteIds(userId) {
         try {
-            const [rows] = await pool.execute(
-                'SELECT workspace_id FROM favorites WHERE user_id = ?',
+            const result = await pool.query(
+                'SELECT workspace_id FROM favorites WHERE user_id = $1',
                 [userId]
             );
             
-            return rows.map(row => row.workspace_id);
+            return result.rows.map(row => row.workspace_id);
         } catch (error) {
             console.error('Error getting favorite ids:', error);
             throw error;

@@ -1,27 +1,22 @@
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
+const { createClient } = require('@supabase/supabase-js');
+const dotenv = require('dotenv');
 
-// Créer le dossier uploads s'il n'existe pas
-const uploadDir = './uploads';
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+dotenv.config();
 
-// Configuration du stockage
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
+// Initialize Supabase client
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
+const BUCKET_NAME = 'workspaces'; // Make sure this bucket exists in Supabase
 
-// Filtrer les fichiers (images seulement)
+// Storage configuration (Memory)
+const storage = multer.memoryStorage();
+
+// File filter
 const fileFilter = (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif/;
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
     
@@ -32,7 +27,7 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
-// Créer l'instance multer
+// Multer instance
 const upload = multer({
     storage: storage,
     limits: {
@@ -41,7 +36,39 @@ const upload = multer({
     fileFilter: fileFilter
 });
 
-// Middleware pour gérer les erreurs d'upload
+// Helper to upload to Supabase
+const uploadToSupabase = async (file) => {
+    try {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const filename = `${file.fieldname}-${uniqueSuffix}${path.extname(file.originalname)}`;
+        
+        const { data, error } = await supabase.storage
+            .from(BUCKET_NAME)
+            .upload(filename, file.buffer, {
+                contentType: file.mimetype,
+                upsert: false
+            });
+
+        if (error) {
+            throw error;
+        }
+
+        // Get public URL
+        const { data: publicData } = supabase.storage
+            .from(BUCKET_NAME)
+            .getPublicUrl(filename);
+            
+        return {
+            filename: filename,
+            url: publicData.publicUrl
+        };
+    } catch (error) {
+        console.error('Supabase Upload Error:', error);
+        throw error;
+    }
+};
+
+// Middleware to handle upload errors
 const handleUploadError = (err, req, res, next) => {
     if (err instanceof multer.MulterError) {
         if (err.code === 'LIMIT_FILE_SIZE') {
@@ -65,5 +92,6 @@ const handleUploadError = (err, req, res, next) => {
 
 module.exports = {
     upload,
+    uploadToSupabase,
     handleUploadError
 };

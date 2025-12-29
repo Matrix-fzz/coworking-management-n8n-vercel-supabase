@@ -1,88 +1,91 @@
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-// Créer un pool de connexions
-const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'coworking_db',
-    port: process.env.DB_PORT || 3306,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-    enableKeepAlive: true,
-    keepAliveInitialDelay: 0
+// Create a connection pool
+// Prefer DATABASE_URL for Supabase/Vercel
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
-// Test de connexion
+// Test connection
 const testConnection = async () => {
     try {
-        const connection = await pool.getConnection();
-        console.log('✅ Connected to MySQL database successfully');
-        connection.release();
+        const client = await pool.connect();
+        console.log('✅ Connected to PostgreSQL database successfully');
+        client.release();
         
-        // Vérifier si les tables existent
+        // Verify tables exist
         await checkTables();
     } catch (error) {
         console.error('❌ Error connecting to database:', error.message);
-        process.exit(1);
+        // Don't exit process in serverless environment, just log error
+        if (process.env.NODE_ENV !== 'production') {
+            process.exit(1);
+        }
     }
 };
 
-// Vérifier et créer les tables si nécessaire
+// Check and create tables if necessary
 const checkTables = async () => {
     try {
+        // Function to update timestamp
+        const createUpdateTriggerFunc = `
+            CREATE OR REPLACE FUNCTION update_updated_at_column()
+            RETURNS TRIGGER AS $$
+            BEGIN
+                NEW.updated_at = NOW();
+                RETURN NEW;
+            END;
+            $$ language 'plpgsql';
+        `;
+
         const createTables = `
             CREATE TABLE IF NOT EXISTS users (
-                id INT PRIMARY KEY AUTO_INCREMENT,
+                id SERIAL PRIMARY KEY,
                 username VARCHAR(50) NOT NULL UNIQUE,
                 email VARCHAR(100) NOT NULL UNIQUE,
                 password_hash VARCHAR(255) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
 
             CREATE TABLE IF NOT EXISTS workspaces (
-                id INT PRIMARY KEY AUTO_INCREMENT,
+                id SERIAL PRIMARY KEY,
                 name VARCHAR(100) NOT NULL,
                 capacity INT NOT NULL,
                 price_per_day DECIMAL(10, 2) NOT NULL,
                 city VARCHAR(50) NOT NULL,
                 amenities TEXT NOT NULL,
-                status ENUM('available', 'full') DEFAULT 'available',
+                status VARCHAR(20) DEFAULT 'available' CHECK (status IN ('available', 'full')),
                 image_url TEXT,
-                user_id INT NOT NULL,
+                user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
 
             CREATE TABLE IF NOT EXISTS favorites (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                user_id INT NOT NULL,
-                workspace_id INT NOT NULL,
+                id SERIAL PRIMARY KEY,
+                user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                workspace_id INT NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE KEY unique_favorite (user_id, workspace_id),
-                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-                FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE
+                UNIQUE (user_id, workspace_id)
             );
 
             CREATE TABLE IF NOT EXISTS scraping_requests (
-                id INT PRIMARY KEY AUTO_INCREMENT,
+                id SERIAL PRIMARY KEY,
                 city VARCHAR(50) NOT NULL,
                 keyword VARCHAR(100) NOT NULL,
-                status ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
+                status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'failed')),
                 sheet_url VARCHAR(255),
-                user_id INT NOT NULL,
+                user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                completed_at TIMESTAMP NULL,
-                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+                completed_at TIMESTAMP NULL
             );
 
-            -- Créer des index pour améliorer les performances
+            -- Indexes
             CREATE INDEX IF NOT EXISTS idx_workspaces_city ON workspaces(city);
             CREATE INDEX IF NOT EXISTS idx_workspaces_status ON workspaces(status);
             CREATE INDEX IF NOT EXISTS idx_workspaces_user ON workspaces(user_id);
@@ -90,14 +93,18 @@ const checkTables = async () => {
             CREATE INDEX IF NOT EXISTS idx_favorites_workspace ON favorites(workspace_id);
         `;
 
-        // Exécuter chaque instruction SQL séparément
-        const statements = createTables.split(';').filter(stmt => stmt.trim());
-        
-        for (const statement of statements) {
-            if (statement.trim()) {
-                await pool.execute(statement + ';');
-            }
-        }
+        // Create Valid Triggers
+        const createTriggers = `
+            DROP TRIGGER IF EXISTS update_users_updated_at ON users;
+            CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+
+            DROP TRIGGER IF EXISTS update_workspaces_updated_at ON workspaces;
+            CREATE TRIGGER update_workspaces_updated_at BEFORE UPDATE ON workspaces FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+        `;
+
+        await pool.query(createUpdateTriggerFunc);
+        await pool.query(createTables);
+        await pool.query(createTriggers);
         
         console.log('✅ Database tables checked/created successfully');
     } catch (error) {
@@ -105,7 +112,7 @@ const checkTables = async () => {
     }
 };
 
-// Tester la connexion immédiatement
+// Test connection immediately
 testConnection();
 
 module.exports = pool;

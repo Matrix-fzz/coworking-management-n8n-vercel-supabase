@@ -92,7 +92,7 @@ class AuthManager {
 
         // Redirection
         setTimeout(() => {
-          window.location.href = "../../public/index.html";
+          window.location.href = "../index.html";
         }, 1500);
       }
     } catch (error) {
@@ -163,7 +163,7 @@ class AuthManager {
 
         setTimeout(() => {
           console.log("🔄 Redirection vers index.html...");
-          window.location.href = "../../public/index.html";
+          window.location.href = "../index.html";
         }, 1000);
       }
     } catch (error) {
@@ -192,7 +192,7 @@ class AuthManager {
     setTimeout(() => {
       // Redirection dynamique selon la page actuelle
       const isPagesDir = window.location.pathname.includes('/pages/');
-      window.location.href = isPagesDir ? "../../public/index.html" : "index.html";
+      window.location.href = isPagesDir ? "../index.html" : "index.html";
     }, 1000);
   }
 
@@ -341,7 +341,7 @@ class AuthManager {
 
       // Redirection dynamique
       const isPagesDir = window.location.pathname.includes('/pages/');
-      const redirectTo = isPagesDir ? "login.html" : "../src/pages/login.html";
+      const redirectTo = isPagesDir ? "login.html" : "pages/login.html";
 
       setTimeout(() => {
         window.location.href = redirectTo;
