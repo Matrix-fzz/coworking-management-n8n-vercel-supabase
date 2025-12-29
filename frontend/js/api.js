@@ -1,7 +1,7 @@
 // Configuration de l'API
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:3000/api'
-    : '/api'; // In production (Vercel), backend runs on same domain or /api proxy
+    : 'https://coworking-management-n8n-vercel-supabase-lmx46wbio.vercel.app/api'; // Production Backend URL
 
 // Fonctions utilitaires pour les requêtes API
 class ApiService {
