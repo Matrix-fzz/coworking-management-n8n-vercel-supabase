@@ -18,9 +18,12 @@ require('./utils/database');
 const app = express();
 
 // Middleware CORS
+// Middleware CORS
 const corsOptions = {
-    origin: true, // Allow all origins (reflects the request origin)
-    credentials: true,
+    origin: '*', // Allow all origins
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: false, // Bearer token does not require credentials/cookies
     optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
