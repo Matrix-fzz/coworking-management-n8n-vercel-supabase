@@ -1,0 +1,59 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "backend/api/index.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "frontend/public/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/api/index.js"
+    },
+    {
+      "src": "/js/(.*)",
+      "dest": "/frontend/public/js/$1"
+    },
+    {
+      "src": "/css/(.*)",
+      "dest": "/frontend/public/css/$1"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/frontend/public/assets/$1"
+    },
+    {
+      "src": "/pages/(.*)",
+      "dest": "/frontend/public/pages/$1"
+    },
+    {
+      "src": "/login.html",
+      "dest": "/frontend/public/pages/login.html"
+    },
+    {
+      "src": "/register.html",
+      "dest": "/frontend/public/pages/register.html"
+    },
+    {
+      "src": "/favorites.html",
+      "dest": "/frontend/public/pages/favorites.html"
+    },
+    {
+      "src": "/profile.html",
+      "dest": "/frontend/public/pages/profile.html"
+    },
+    {
+      "src": "/scraping.html",
+      "dest": "/frontend/public/pages/scraping.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/public/index.html"
+    }
+  ]
+}
