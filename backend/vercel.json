@@ -1,13 +1,7 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "src/app.js",
-      "use": "@vercel/node"
-    }
-  ],
   "rewrites": [
-    { "source": "/(.*)", "destination": "/src/app.js" }
+    { "source": "/(.*)", "destination": "/api/index.js" }
   ],
   "headers": [
     {
@@ -19,8 +13,5 @@
         { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization" }
       ]
     }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 }
