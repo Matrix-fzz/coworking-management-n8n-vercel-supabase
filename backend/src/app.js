@@ -43,6 +43,16 @@ app.use('/api/favorites', favoriteRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/scraping', require('./routes/scraping.routes'));
+// Route racine - Redirection ou message d'accueil
+app.get('/', (req, res) => {
+    res.json({
+        success: true,
+        message: 'Coworking Management API',
+        documentation: '/api/docs',
+        health: '/api/health'
+    });
+});
+
 // Route de test
 app.get('/api/health', (req, res) => {
     res.json({
