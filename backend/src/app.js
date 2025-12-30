@@ -27,7 +27,7 @@ const corsOptions = {
     optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Enable pre-flight across-the-board
+// app.options('*', cors(corsOptions)); // Enable pre-flight across-the-board
 
 // Middleware pour parser le JSON
 app.use(express.json());
@@ -104,12 +104,18 @@ app.use((err, req, res, next) => {
     });
 });
 
+// Export de l'application
+module.exports = app;
+
 // Port d'écoute
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server is running on port ${PORT}`);
-    console.log(`📚 API Documentation: http://localhost:${PORT}/api/docs`);
-    console.log(`🩺 Health check: http://localhost:${PORT}/api/health`);
-    console.log(`🌐 CORS Origin: ${corsOptions.origin}`);
-});
+// Démarrer le serveur uniquement si le fichier est exécuté directement
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`🚀 Server is running on port ${PORT}`);
+        console.log(`📚 API Documentation: http://localhost:${PORT}/api/docs`);
+        console.log(`🩺 Health check: http://localhost:${PORT}/api/health`);
+        console.log(`🌐 CORS Origin: ${corsOptions.origin}`);
+    });
+}
