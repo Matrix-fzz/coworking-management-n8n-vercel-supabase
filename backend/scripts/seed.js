@@ -52,12 +52,12 @@ async function seedDatabase() {
 
         // Insert coworking workspaces
         const workspaces = [
-            ['Coworking Marrakech', 50, 150.00, 'Marrakech', JSON.stringify(['wifi', 'imprimante', 'café', 'salle de réunion']), 'available', 'https://via.placeholder.com/400x300/FF6B6B/FFFFFF?text=Coworking+Marrakech', userIds[0]],
-            ['Espace Digital Casablanca', 30, 120.00, 'Casablanca', JSON.stringify(['wifi', 'imprimante', 'parking']), 'available', 'https://via.placeholder.com/400x300/4ECDC4/FFFFFF?text=Espace+Digital+Casablanca', userIds[1] || userIds[0]],
-            ['Tech Hub Rabat', 100, 200.00, 'Rabat', JSON.stringify(['wifi', 'café', 'gym', 'salle de conférence']), 'full', 'https://via.placeholder.com/400x300/45B7D1/FFFFFF?text=Tech+Hub+Rabat', userIds[0]],
-            ['Creative Space Fès', 20, 80.00, 'Fès', JSON.stringify(['wifi', 'imprimante', 'café']), 'available', 'https://via.placeholder.com/400x300/96CEB4/FFFFFF?text=Creative+Space+Fès', userIds[1] || userIds[0]],
-            ['Business Center Tanger', 75, 180.00, 'Tanger', JSON.stringify(['wifi', 'imprimante', 'café', 'terrasse']), 'available', 'https://via.placeholder.com/400x300/FECA57/FFFFFF?text=Business+Center+Tanger', userIds[2] || userIds[0]],
-            ['Startup Lab Agadir', 40, 130.00, 'Agadir', JSON.stringify(['wifi', 'imprimante', 'café', 'laboratoire']), 'available', 'https://via.placeholder.com/400x300/FF9FF3/FFFFFF?text=Startup+Lab+Agadir', userIds[0]]
+            ['Coworking Marrakech', 50, 150.00, 'Marrakech', JSON.stringify(['wifi', 'imprimante', 'café', 'salle de réunion']), 'available', 'https://placehold.co/400x300/FF6B6B/FFFFFF?text=Coworking+Marrakech', userIds[0]],
+            ['Espace Digital Casablanca', 30, 120.00, 'Casablanca', JSON.stringify(['wifi', 'imprimante', 'parking']), 'available', 'https://placehold.co/400x300/4ECDC4/FFFFFF?text=Espace+Digital+Casablanca', userIds[1] || userIds[0]],
+            ['Tech Hub Rabat', 100, 200.00, 'Rabat', JSON.stringify(['wifi', 'café', 'gym', 'salle de conférence']), 'full', 'https://placehold.co/400x300/45B7D1/FFFFFF?text=Tech+Hub+Rabat', userIds[0]],
+            ['Creative Space Fès', 20, 80.00, 'Fès', JSON.stringify(['wifi', 'imprimante', 'café']), 'available', 'https://placehold.co/400x300/96CEB4/FFFFFF?text=Creative+Space+Fes', userIds[1] || userIds[0]],
+            ['Business Center Tanger', 75, 180.00, 'Tanger', JSON.stringify(['wifi', 'imprimante', 'café', 'terrasse']), 'available', 'https://placehold.co/400x300/FECA57/FFFFFF?text=Business+Center+Tanger', userIds[2] || userIds[0]],
+            ['Startup Lab Agadir', 40, 130.00, 'Agadir', JSON.stringify(['wifi', 'imprimante', 'café', 'laboratoire']), 'available', 'https://placehold.co/400x300/FF9FF3/FFFFFF?text=Startup+Lab+Agadir', userIds[0]]
         ];
 
         for (const workspace of workspaces) {

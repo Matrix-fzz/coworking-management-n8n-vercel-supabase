@@ -27,8 +27,17 @@ const corsOptions = {
     optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
-// Enable pre-flight across-the-board
-app.options('*', cors(corsOptions));
+
+// Handle OPTIONS preflight requests (Express 5 compatible)
+app.use((req, res, next) => {
+    if (req.method === 'OPTIONS') {
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,PATCH,OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        return res.status(200).json({});
+    }
+    next();
+});
 
 // Middleware pour parser le JSON
 app.use(express.json());
