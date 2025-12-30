@@ -244,7 +244,8 @@ class WorkspaceManager {
 
     // Ouvrir le modal d'édition
     openEditWorkspaceModal(id) {
-        const workspace = this.workspaces.find(w => w.id === id);
+        const numId = parseInt(id);
+        const workspace = this.workspaces.find(w => parseInt(w.id) === numId);
         if (!workspace) return;
         
         const form = document.getElementById('addWorkspaceForm');
