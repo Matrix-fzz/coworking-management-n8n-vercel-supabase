@@ -13,7 +13,11 @@ class AgentController {
       const n8nAgentWebhookUrl =
         process.env.N8N_AGENT_WEBHOOK_URL || process.env.N8N_WEBHOOK_URL;
 
-      console.log(`DEBUG - n8nAgentWebhookUrl: ${n8nAgentWebhookUrl}`);
+      console.log(`DEBUG - n8nAgentWebhookUrl found: [${n8nAgentWebhookUrl}]`);
+      if (n8nAgentWebhookUrl) {
+          console.log(`DEBUG - URL Length: ${n8nAgentWebhookUrl.length}`);
+          console.log(`DEBUG - URL Prefix: ${n8nAgentWebhookUrl.substring(0, 10)}`);
+      }
 
       if (!n8nAgentWebhookUrl) {
         console.error("DEBUG - No n8n webhook URL found in process.env");
@@ -84,12 +88,16 @@ class AgentController {
         ApiResponse.success({ response: aiResponse }, "Réponse de l'IA reçue")
       );
     } catch (error) {
-      console.error("DEBUG - Agent handleChat exception:", error);
+      console.error("CRITICAL DEBUG - Agent handleChat exception:");
+      console.error("Error Name:", error.name);
+      console.error("Error Message:", error.message);
+      console.error("Error Stack:", error.stack);
+      
       res
         .status(500)
         .json(
           ApiResponse.error(
-            "Erreur interne du serveur lors du traitement du chat"
+            `Erreur interne : ${error.message || "Erreur inconnue"}`
           )
         );
     }
