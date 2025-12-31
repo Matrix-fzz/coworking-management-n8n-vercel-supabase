@@ -52,14 +52,33 @@ class AgentController {
       const result = await response.json();
       console.log(`DEBUG - n8n result:`, JSON.stringify(result));
 
-      // Assume n8n returns { output: "response text" } or similar
+      // Check if n8n is in test mode (returns "Workflow was started")
+      if (result.message === "Workflow was started") {
+        console.error("DEBUG - n8n workflow is in test mode, not returning actual response");
+        return res.status(503).json(
+          ApiResponse.error(
+            "Le workflow n8n est en mode test. Veuillez configurer le webhook pour 'Respond to Webhook' au lieu de 'Wait for webhook call'."
+          )
+        );
+      }
+
+      // Parse n8n response - try different formats
       const aiResponse =
         result.output ||
         result.response ||
-        result.message ||
+        result.text ||
         (Array.isArray(result)
-          ? result[0].message || result[0].output || JSON.stringify(result[0])
-          : typeof result === 'string' ? result : "Désolé, je ne peux pas répondre pour le moment.");
+          ? result[0]?.output || result[0]?.response || result[0]?.message || JSON.stringify(result[0])
+          : typeof result === 'string' ? result : null);
+
+      if (!aiResponse) {
+        console.error("DEBUG - Could not extract AI response from n8n result:", result);
+        return res.status(500).json(
+          ApiResponse.error(
+            "Impossible d'extraire la réponse de l'IA. Format de réponse inattendu."
+          )
+        );
+      }
 
       res.json(
         ApiResponse.success({ response: aiResponse }, "Réponse de l'IA reçue")
