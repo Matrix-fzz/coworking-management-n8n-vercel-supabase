@@ -169,7 +169,9 @@ class AIAgent {
             } else if (error.status === 404) {
                 // Si le message d'erreur contient "n8n", c'est que la route existe mais c'est n8n qui a renvoyé 404
                 if (error.message && error.message.includes('n8n')) {
-                    displayMsg = `Erreur n8n : Le webhook n'a pas été trouvé. Vérifiez l'URL de l'agent dans n8n. (${error.message})`;
+                    displayMsg = `Erreur n8n : ${error.message}`;
+                } else if (error.message && error.message.length < 100) {
+                    displayMsg = `Route ou service non trouvé (404) : ${error.message}`;
                 } else {
                     displayMsg = "La route du chat n'a pas été trouvée (/api/agent/chat). Vérifiez le déploiement du backend.";
                 }
