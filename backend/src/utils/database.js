@@ -5,10 +5,16 @@ dotenv.config();
 
 // Create a connection pool
 // Prefer DATABASE_URL for Supabase/Vercel
-const pool = new Pool({
+const poolConfig = {
     connectionString: process.env.DATABASE_URL,
     ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
-});
+};
+
+if (!process.env.DATABASE_URL) {
+    console.warn('⚠️ DATABASE_URL is not defined in environment variables. Database queries will fail.');
+}
+
+const pool = new Pool(poolConfig);
 
 // Test connection
 const testConnection = async () => {

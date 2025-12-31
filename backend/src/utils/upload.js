@@ -8,7 +8,17 @@ dotenv.config();
 // Initialize Supabase client
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+
+let supabase = null;
+if (supabaseUrl && supabaseKey) {
+    try {
+        supabase = createClient(supabaseUrl, supabaseKey);
+    } catch (e) {
+        console.error('❌ Failed to initialize Supabase client:', e.message);
+    }
+} else {
+    console.warn('⚠️ SUPABASE_URL or SUPABASE_KEY is missing. File uploads will fail.');
+}
 const BUCKET_NAME = 'workspaces'; // Make sure this bucket exists in Supabase
 
 // Storage configuration (Memory)

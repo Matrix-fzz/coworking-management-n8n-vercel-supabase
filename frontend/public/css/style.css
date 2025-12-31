@@ -1288,6 +1288,7 @@ main.container {
 }
 input[type="text"],
 input[type="email"],
+input[type="number"],
 input[type="password"] {
   width: 100%;
   padding: 12px 16px;

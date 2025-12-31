@@ -1,7 +1,7 @@
 // Configuration de l'API
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:3000/api'
-    : 'https://coworking-management-n8n-vercel-sup.vercel.app/api'; // Stable Production Backend URL
+    : window.location.origin + '/api'; // Use absolute current origin for production
 
 // Fonctions utilitaires pour les requêtes API
 class ApiService {
