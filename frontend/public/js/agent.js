@@ -140,7 +140,7 @@ class AIAgent {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${API_URL}/agent/chat`, {
+            const response = await fetch(`${API_BASE_URL}/agent/chat`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
