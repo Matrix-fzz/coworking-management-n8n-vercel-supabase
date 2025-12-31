@@ -139,20 +139,10 @@ class AIAgent {
         this.showTyping();
 
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`${API_BASE_URL}/agent/chat`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': token ? `Bearer ${token}` : ''
-                },
-                body: JSON.stringify({
-                    message: text,
-                    history: this.history
-                })
+            const result = await ApiService.post('/agent/chat', {
+                message: text,
+                history: this.history
             });
-
-            const result = await response.json();
 
             // Hide typing
             this.hideTyping();

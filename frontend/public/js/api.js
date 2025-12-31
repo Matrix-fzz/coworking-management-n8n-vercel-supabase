@@ -193,5 +193,6 @@ class CoworkingApi {
 }
 
 // Export pour usage global
+window.API_BASE_URL = API_BASE_URL;
 window.CoworkingApi = CoworkingApi;
 window.ApiService = ApiService;
