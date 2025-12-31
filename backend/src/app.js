@@ -11,6 +11,8 @@ const authRoutes = require('./routes/auth.routes');
 const workspaceRoutes = require('./routes/workspace.routes');
 const favoriteRoutes = require('./routes/favorite.routes');
 const uploadRoutes = require('./routes/upload.routes');
+const agentRoutes = require('./routes/agent.routes');
+
 // Importer la connexion à la base de données
 require('./utils/database');
 
@@ -53,6 +55,8 @@ app.use('/api/favorites', favoriteRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/scraping', require('./routes/scraping.routes'));
+app.use('/api/agent', agentRoutes);
+
 // Route racine - Redirection ou message d'accueil
 app.get('/', (req, res) => {
     res.json({
