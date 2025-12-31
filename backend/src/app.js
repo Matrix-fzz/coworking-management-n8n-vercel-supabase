@@ -46,6 +46,12 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Logger pour debugger les routes
+app.use((req, res, next) => {
+    console.log(`[DEBUG] ${new Date().toISOString()} - ${req.method} ${req.url}`);
+    next();
+});
+
 // Servir les fichiers statiques (pour les images uploadées)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
