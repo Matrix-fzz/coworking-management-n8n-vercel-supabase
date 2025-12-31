@@ -167,7 +167,12 @@ class AIAgent {
             if (error.status === 503) {
                 displayMsg = "Le service d'IA n'est pas encore configuré sur le serveur (Variable d'environnement manquante).";
             } else if (error.status === 404) {
-                displayMsg = "La route du chat n'a pas été trouvée (/api/agent/chat). Vérifiez le déploiement du backend.";
+                // Si le message d'erreur contient "n8n", c'est que la route existe mais c'est n8n qui a renvoyé 404
+                if (error.message && error.message.includes('n8n')) {
+                    displayMsg = `Erreur n8n : Le webhook n'a pas été trouvé. Vérifiez l'URL de l'agent dans n8n. (${error.message})`;
+                } else {
+                    displayMsg = "La route du chat n'a pas été trouvée (/api/agent/chat). Vérifiez le déploiement du backend.";
+                }
             } else if (error.status === 500) {
                 displayMsg = `Erreur serveur (500) : ${error.message || "Erreur interne"}`;
             } else if (error.message && error.message.includes('fetch')) {
