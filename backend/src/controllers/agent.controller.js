@@ -13,7 +13,10 @@ class AgentController {
       const n8nAgentWebhookUrl =
         process.env.N8N_AGENT_WEBHOOK_URL || process.env.N8N_WEBHOOK_URL;
 
+      console.log(`DEBUG - n8nAgentWebhookUrl: ${n8nAgentWebhookUrl}`);
+
       if (!n8nAgentWebhookUrl) {
+        console.error("DEBUG - No n8n webhook URL found in process.env");
         return res
           .status(503)
           .json(ApiResponse.error("Le service d'IA n'est pas configuré"));
@@ -26,7 +29,7 @@ class AgentController {
         timestamp: new Date().toISOString(),
       };
 
-      console.log(`Sending chat message to n8n: ${n8nAgentWebhookUrl}`);
+      console.log(`DEBUG - Sending payload to n8n:`, JSON.stringify(payload));
 
       const response = await fetch(n8nAgentWebhookUrl, {
         method: "POST",
@@ -36,15 +39,18 @@ class AgentController {
         body: JSON.stringify(payload),
       });
 
+      console.log(`DEBUG - n8n response status: ${response.status}`);
+
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`n8n agent error: ${response.status} ${errorText}`);
+        console.error(`DEBUG - n8n agent error content: ${errorText}`);
         return res
           .status(response.status)
           .json(ApiResponse.error("Erreur lors de la communication avec l'IA"));
       }
 
       const result = await response.json();
+      console.log(`DEBUG - n8n result:`, JSON.stringify(result));
 
       // Assume n8n returns { output: "response text" } or similar
       const aiResponse =
@@ -52,14 +58,14 @@ class AgentController {
         result.response ||
         result.message ||
         (Array.isArray(result)
-          ? result[0].message
-          : "Désolé, je ne peux pas répondre pour le moment.");
+          ? result[0].message || result[0].output || JSON.stringify(result[0])
+          : typeof result === 'string' ? result : "Désolé, je ne peux pas répondre pour le moment.");
 
       res.json(
         ApiResponse.success({ response: aiResponse }, "Réponse de l'IA reçue")
       );
     } catch (error) {
-      console.error("Agent handleChat error:", error);
+      console.error("DEBUG - Agent handleChat exception:", error);
       res
         .status(500)
         .json(

@@ -5,6 +5,7 @@ const path = require('path');
 
 // Charger les variables d'environnement
 dotenv.config();
+dotenv.config({ path: path.join(__dirname, '../.env.local'), override: true });
 
 // Importer les routes
 const authRoutes = require('./routes/auth.routes');
