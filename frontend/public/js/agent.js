@@ -150,13 +150,23 @@ class AIAgent {
             if (result.success) {
                 this.addMessage('ai', result.data.response);
             } else {
-                this.addMessage('ai', "Désolé, j'ai rencontré une petite erreur. Pouvez-vous reformuler ?");
-                console.error('Agent API error:', result.message);
+                this.addMessage('ai', result.message || "Désolé, j'ai rencontré une petite erreur.");
+                console.error('Agent API error:', result);
             }
         } catch (error) {
             this.hideTyping();
-            this.addMessage('ai', "Oups ! Je n'arrive pas à me connecter au serveur.");
-            console.error('Fetch error:', error);
+            
+            let displayMsg = "Oups ! Je n'arrive pas à me connecter au serveur.";
+            if (error.status === 503) {
+                displayMsg = "Le service d'IA n'est pas encore configuré sur le serveur (Variable d'environnement manquante).";
+            } else if (error.status === 404) {
+                displayMsg = "La route du chat n'a pas été trouvée. Vérifiez le déploiement du backend.";
+            } else if (error.message) {
+                displayMsg = `Erreur : ${error.message}`;
+            }
+            
+            this.addMessage('ai', displayMsg);
+            console.error('AI Agent Error:', error);
         } finally {
             this.sendBtn.disabled = false;
         }
