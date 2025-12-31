@@ -3,6 +3,8 @@ const API_BASE_URL = window.location.hostname === 'localhost' || window.location
     ? 'http://localhost:3000/api'
     : window.location.origin + '/api'; // Use absolute current origin for production
 
+console.log('DEBUG - API_BASE_URL:', API_BASE_URL);
+
 // Fonctions utilitaires pour les requêtes API
 class ApiService {
     // Headers communs

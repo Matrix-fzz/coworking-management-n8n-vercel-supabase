@@ -157,16 +157,26 @@ class AIAgent {
             this.hideTyping();
             
             let displayMsg = "Oups ! Je n'arrive pas à me connecter au serveur.";
+            
+            console.error('AI Agent Error Details:', {
+                status: error.status,
+                message: error.message,
+                error: error
+            });
+
             if (error.status === 503) {
                 displayMsg = "Le service d'IA n'est pas encore configuré sur le serveur (Variable d'environnement manquante).";
             } else if (error.status === 404) {
-                displayMsg = "La route du chat n'a pas été trouvée. Vérifiez le déploiement du backend.";
+                displayMsg = "La route du chat n'a pas été trouvée (/api/agent/chat). Vérifiez le déploiement du backend.";
+            } else if (error.status === 500) {
+                displayMsg = `Erreur serveur (500) : ${error.message || "Erreur interne"}`;
+            } else if (error.message && error.message.includes('fetch')) {
+                displayMsg = "Impossible de contacter le backend. Est-il démarré ?";
             } else if (error.message) {
                 displayMsg = `Erreur : ${error.message}`;
             }
             
             this.addMessage('ai', displayMsg);
-            console.error('AI Agent Error:', error);
         } finally {
             this.sendBtn.disabled = false;
         }

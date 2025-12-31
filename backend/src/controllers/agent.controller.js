@@ -46,7 +46,7 @@ class AgentController {
         console.error(`DEBUG - n8n agent error content: ${errorText}`);
         return res
           .status(response.status)
-          .json(ApiResponse.error("Erreur lors de la communication avec l'IA"));
+          .json(ApiResponse.error(`L'IA (n8n) a répondu avec une erreur : ${response.status}`));
       }
 
       const result = await response.json();
