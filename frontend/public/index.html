@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Coworking Manager - Gestion des Espaces de Coworking</title>
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/output.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -13,231 +13,503 @@
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="css/agent.css" />
   </head>
 
-  <body>
+  <body
+    class="bg-gray-50 text-slate-800 font-sans antialiased selection:bg-primary-100 selection:text-primary-700"
+  >
     <!-- Navigation -->
-    <nav class="navbar">
-      <div class="container">
-        <a href="index.html" class="logo">
-          <i class="fas fa-building"></i>
-          <span>Coworking Manager</span>
-        </a>
-        <button class="menu-toggle" id="menuToggle">
-          <i class="fas fa-bars"></i>
-        </button>
-        <div class="nav-links" id="navLinks">
-          <a href="index.html" class="active"
-            ><i class="fas fa-home"></i> Accueil</a
+    <nav
+      class="fixed w-full z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
+          <!-- Logo -->
+          <a
+            href="index.html"
+            class="flex items-center gap-3 decoration-0 group"
           >
-          <a href="pages/favorites.html"
-            ><i class="fas fa-heart"></i> Mes Favoris</a
-          >
-          <a href="pages/scraping.html"
-            ><i class="fas fa-robot"></i> Scraping</a
-          >
-          <div class="auth-section" id="authSection">
-            <a href="pages/login.html" class="btn btn-outline"
-              ><i class="fas fa-sign-in-alt"></i> Connexion</a
+            <div
+              class="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center text-white text-lg shadow-lg shadow-primary-500/30 group-hover:scale-105 transition-transform duration-300"
             >
-            <a href="pages/register.html" class="btn btn-primary"
-              ><i class="fas fa-user-plus"></i> Inscription</a
+              <i class="fas fa-building"></i>
+            </div>
+            <span
+              class="text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent"
+              >Coworking Manager</span
             >
-          </div>
-          <div class="user-section" id="userSection" style="display: none">
+          </a>
+
+          <!-- Mobile Menu Button -->
+          <button
+            class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 text-slate-600 focus:outline-none"
+            id="menuToggle"
+          >
+            <i class="fas fa-bars text-xl"></i>
+          </button>
+
+          <!-- Desktop Nav -->
+          <div class="hidden md:flex items-center gap-8" id="navLinksDesktop">
             <a
-              href="pages/profile.html"
-              class="user-info"
-              title="Gérer mon profil"
+              href="index.html"
+              class="text-primary-600 font-medium border-b-2 border-primary-600 pb-1"
             >
-              <i class="fas fa-user-circle"></i>
-              <span id="usernameDisplay"></span>
+              <i class="fas fa-home mr-2"></i>Accueil
             </a>
-            <button onclick="logout()" class="btn btn-danger btn-sm">
-              <i class="fas fa-sign-out-alt"></i>
-            </button>
+            <a
+              href="pages/favorites.html"
+              class="text-slate-600 font-medium hover:text-primary-600 transition-colors duration-200"
+            >
+              <i class="fas fa-heart mr-2"></i>Mes Favoris
+            </a>
+            <a
+              href="pages/scraping.html"
+              class="text-slate-600 font-medium hover:text-primary-600 transition-colors duration-200"
+            >
+              <i class="fas fa-robot mr-2"></i>Scraping
+            </a>
+
+            <div class="auth-section flex items-center gap-4" id="authSection">
+              <a
+                href="pages/login.html"
+                class="px-5 py-2.5 rounded-lg border border-slate-200 text-slate-600 font-medium hover:border-primary-600 hover:text-primary-600 transition-all duration-300"
+              >
+                <i class="fas fa-sign-in-alt mr-2"></i>Connexion
+              </a>
+              <a
+                href="pages/register.html"
+                class="px-5 py-2.5 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700 shadow-lg shadow-primary-500/30 transition-all duration-300 hover:-translate-y-0.5"
+              >
+                <i class="fas fa-user-plus mr-2"></i>Inscription
+              </a>
+            </div>
+
+            <div
+              class="user-section hidden flex items-center gap-4"
+              id="userSection"
+            >
+              <a
+                href="pages/profile.html"
+                class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors"
+                title="Gérer mon profil"
+              >
+                <div
+                  class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-600"
+                >
+                  <i class="fas fa-user text-sm"></i>
+                </div>
+                <span id="usernameDisplay" class="font-medium text-slate-700"
+                  >User</span
+                >
+              </a>
+              <button
+                onclick="logout()"
+                class="w-9 h-9 flex items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
+                title="Déconnexion"
+              >
+                <i class="fas fa-sign-out-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div
+        class="md:hidden hidden bg-white border-t border-gray-100 absolute w-full left-0 shadow-lg animate-fade-in"
+        id="navLinks"
+      >
+        <div class="px-4 py-6 space-y-4 flex flex-col">
+          <a
+            href="index.html"
+            class="flex items-center gap-3 text-primary-600 font-medium p-2 rounded-lg bg-primary-50"
+          >
+            <i class="fas fa-home w-5"></i>Accueil
+          </a>
+          <a
+            href="pages/favorites.html"
+            class="flex items-center gap-3 text-slate-600 font-medium p-2 rounded-lg hover:bg-gray-50"
+          >
+            <i class="fas fa-heart w-5"></i>Mes Favoris
+          </a>
+          <a
+            href="pages/scraping.html"
+            class="flex items-center gap-3 text-slate-600 font-medium p-2 rounded-lg hover:bg-gray-50"
+          >
+            <i class="fas fa-robot w-5"></i>Scraping
+          </a>
+          <div
+            class="auth-section-mobile space-y-3 pt-4 border-t border-gray-100"
+            id="authSectionMobile"
+          >
+            <a
+              href="pages/login.html"
+              class="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-lg border border-slate-200 text-slate-600 font-medium hover:bg-gray-50"
+            >
+              <i class="fas fa-sign-in-alt"></i> Connexion
+            </a>
+            <a
+              href="pages/register.html"
+              class="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700 shadow-md"
+            >
+              <i class="fas fa-user-plus"></i> Inscription
+            </a>
+          </div>
+          <div
+            class="user-section-mobile hidden space-y-3 pt-4 border-t border-gray-100"
+            id="userSectionMobile"
+          >
+            <div class="flex items-center justify-between px-2">
+              <a
+                href="pages/profile.html"
+                class="flex items-center gap-3 font-medium text-slate-700"
+              >
+                <div
+                  class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-600"
+                >
+                  <i class="fas fa-user text-sm"></i>
+                </div>
+                <span id="usernameDisplayMobile">User</span>
+              </a>
+              <button
+                onclick="logout()"
+                class="text-red-500 hover:text-red-600 p-2"
+              >
+                <i class="fas fa-sign-out-alt"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero">
-      <div class="container">
-        <div class="hero-content">
-          <h1>Gérez vos espaces de coworking efficacement</h1>
-          <p>
-            Découvrez, gérez et partagez les meilleurs espaces de travail
-            collaboratif au Maroc
-          </p>
-          <div class="hero-buttons">
-            <a href="#workspaces" class="btn btn-primary btn-large">
-              <i class="fas fa-search"></i> Explorer les espaces
-            </a>
-            <a href="pages/register.html" class="btn btn-secondary btn-large">
-              <i class="fas fa-rocket"></i> Commencer gratuitement
-            </a>
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+      <!-- Background Elements -->
+      <div class="absolute top-0 left-0 w-full h-full -z-10">
+        <div
+          class="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-primary-100/40 blur-3xl"
+        ></div>
+        <div
+          class="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] rounded-full bg-violet-100/40 blur-3xl"
+        ></div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+          <div class="lg:w-1/2 text-center lg:text-left animate-slide-up">
+            <span
+              class="inline-block px-4 py-1.5 rounded-full bg-primary-50 text-primary-600 text-sm font-semibold mb-6 border border-primary-100"
+            >
+              <i class="fas fa-star text-xs mr-2"></i>Le meilleur du coworking
+              au Maroc
+            </span>
+            <h1
+              class="text-4xl lg:text-6xl font-bold leading-tight text-slate-900 mb-6"
+            >
+              Gérez vos espaces de
+              <span
+                class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-violet-600"
+                >coworking</span
+              >
+              efficacement
+            </h1>
+            <p
+              class="text-lg text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0"
+            >
+              Découvrez, gérez et partagez les meilleurs espaces de travail
+              collaboratif. Une solution tout-en-un pour les nomades digitaux et
+              les propriétaires d'espaces.
+            </p>
+            <div
+              class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
+            >
+              <a
+                href="#workspaces"
+                class="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary-600 text-white font-semibold shadow-lg shadow-primary-500/30 hover:bg-primary-700 hover:-translate-y-1 transition-all duration-300 text-center"
+              >
+                <i class="fas fa-search mr-2"></i> Explorer les espaces
+              </a>
+              <a
+                href="pages/register.html"
+                class="w-full sm:w-auto px-8 py-4 rounded-xl bg-white text-primary-600 border-2 border-primary-100 font-semibold hover:bg-primary-50 hover:border-primary-200 transition-all duration-300 text-center"
+              >
+                <i class="fas fa-rocket mr-2"></i> Commencer gratuitement
+              </a>
+            </div>
           </div>
-        </div>
-        <div class="hero-image">
-          <img
-            src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=600"
-            alt="Coworking Space"
-          />
+          <div class="lg:w-1/2 animate-fade-in delay-200 relative">
+            <div
+              class="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-100 group"
+            >
+              <img
+                src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=800"
+                alt="Coworking Space"
+                class="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700"
+              />
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent"
+              ></div>
+            </div>
+            <!-- Floating stats card -->
+            <div
+              class="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl border border-gray-100 hidden md:block animate-slide-up delay-500"
+            >
+              <div class="flex items-center gap-4">
+                <div
+                  class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xl"
+                >
+                  <i class="fas fa-check"></i>
+                </div>
+                <div>
+                  <p class="text-sm text-slate-500">Espaces vérifiés</p>
+                  <p class="text-xl font-bold text-slate-800">100%</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Search & Filters -->
-    <section class="filters-section" id="workspaces">
-      <div class="container">
-        <div class="search-box">
-          <input
-            type="text"
-            id="searchInput"
-            placeholder="Rechercher un espace de coworking..."
-          />
-          <button onclick="searchWorkspaces()" class="btn btn-primary">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
-        <div class="filters">
-          <div class="filter-group">
-            <select id="cityFilter" onchange="filterWorkspaces()">
-              <option value="">Toutes les villes</option>
-              <option value="Casablanca">Casablanca</option>
-              <option value="Marrakech">Marrakech</option>
-              <option value="Rabat">Rabat</option>
-              <option value="Fès">Fès</option>
-              <option value="Tanger">Tanger</option>
-              <option value="Agadir">Agadir</option>
-            </select>
-          </div>
-
-          <div class="filter-group">
-            <select id="statusFilter" onchange="filterWorkspaces()">
-              <option value="">Tous les statuts</option>
-              <option value="available">Disponible</option>
-              <option value="full">Complet</option>
-            </select>
-          </div>
-
-          <div class="filter-group">
-            <input
-              type="number"
-              id="minPrice"
-              placeholder="Prix min"
-              class="filter-input"
-              onchange="filterWorkspaces()"
-            />
-            <input
-              type="number"
-              id="maxPrice"
-              placeholder="Prix max"
-              class="filter-input"
-              onchange="filterWorkspaces()"
-            />
-          </div>
-
-          <div class="filter-group">
-            <input
-              type="number"
-              id="minCapacity"
-              placeholder="Capacité pers"
-              class="filter-input"
-              onchange="filterWorkspaces()"
-            />
-          </div>
-
-          <div class="filter-group dropdown-check-list" tabindex="100">
-            <span class="anchor" onclick="toggleAmenitiesDropdown()"
-              >Équipements</span
+    <section class="py-12 bg-white" id="workspaces">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Search Bar -->
+        <div class="max-w-4xl mx-auto -mt-24 mb-12 relative z-10">
+          <div
+            class="bg-white p-4 rounded-2xl shadow-xl border border-gray-100 flex flex-col md:flex-row gap-4"
+          >
+            <div class="flex-1 relative">
+              <i
+                class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+              ></i>
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Rechercher un espace (nom, ville...)"
+                class="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary-500/20 text-slate-700 placeholder:text-slate-400"
+              />
+            </div>
+            <button
+              onclick="searchWorkspaces()"
+              class="px-8 py-3 bg-primary-600 text-white rounded-xl font-semibold hover:bg-primary-700 transition-colors shadow-lg shadow-primary-500/30"
             >
-            <ul class="items" id="amenitiesFilter">
-              <li>
+              Rechercher
+            </button>
+          </div>
+        </div>
+
+        <!-- Filters Grid -->
+        <div
+          class="bg-white/50 backdrop-blur-sm rounded-2xl border border-gray-200 p-6 mb-10"
+        >
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="space-y-2">
+              <label
+                class="text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                >Ville</label
+              >
+              <select
+                id="cityFilter"
+                onchange="filterWorkspaces()"
+                class="w-full px-4 py-2.5 rounded-lg bg-white border border-slate-200 text-slate-700 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
+              >
+                <option value="">Toutes les villes</option>
+                <option value="Casablanca">Casablanca</option>
+                <option value="Marrakech">Marrakech</option>
+                <option value="Rabat">Rabat</option>
+                <option value="Fès">Fès</option>
+                <option value="Tanger">Tanger</option>
+                <option value="Agadir">Agadir</option>
+              </select>
+            </div>
+
+            <div class="space-y-2">
+              <label
+                class="text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                >Statut</label
+              >
+              <select
+                id="statusFilter"
+                onchange="filterWorkspaces()"
+                class="w-full px-4 py-2.5 rounded-lg bg-white border border-slate-200 text-slate-700 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
+              >
+                <option value="">Tous les statuts</option>
+                <option value="available">Disponible</option>
+                <option value="full">Complet</option>
+              </select>
+            </div>
+
+            <div class="space-y-2">
+              <label
+                class="text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                >Prix (DH)</label
+              >
+              <div class="flex gap-2">
                 <input
-                  type="checkbox"
-                  value="wifi"
+                  type="number"
+                  id="minPrice"
+                  placeholder="Min"
+                  class="w-full px-4 py-2.5 rounded-lg bg-white border border-slate-200 text-slate-700 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none text-sm"
                   onchange="filterWorkspaces()"
                 />
-                Wifi
-              </li>
-              <li>
                 <input
-                  type="checkbox"
-                  value="café"
+                  type="number"
+                  id="maxPrice"
+                  placeholder="Max"
+                  class="w-full px-4 py-2.5 rounded-lg bg-white border border-slate-200 text-slate-700 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none text-sm"
                   onchange="filterWorkspaces()"
                 />
-                Café
-              </li>
-              <li>
-                <input
-                  type="checkbox"
-                  value="imprimante"
-                  onchange="filterWorkspaces()"
-                />
-                Imprimante
-              </li>
-              <li>
-                <input
-                  type="checkbox"
-                  value="parking"
-                  onchange="filterWorkspaces()"
-                />
-                Parking
-              </li>
-              <li>
-                <input
-                  type="checkbox"
-                  value="salle de réunion"
-                  onchange="filterWorkspaces()"
-                />
-                Salle de réunion
-              </li>
-              <li>
-                <input
-                  type="checkbox"
-                  value="climatisation"
-                  onchange="filterWorkspaces()"
-                />
-                Climatisation
-              </li>
-            </ul>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <label
+                class="text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                >Capacité</label
+              >
+              <input
+                type="number"
+                id="minCapacity"
+                placeholder="Pers. min"
+                class="w-full px-4 py-2.5 rounded-lg bg-white border border-slate-200 text-slate-700 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
+                onchange="filterWorkspaces()"
+              />
+            </div>
           </div>
 
-          <div class="filter-group">
-            <select id="sortFilter" onchange="sortWorkspaces()">
-              <option value="newest">Plus récents</option>
-              <option value="price_asc">Prix croissant</option>
-              <option value="price_desc">Prix décroissant</option>
-              <option value="capacity">Capacité</option>
-            </select>
-          </div>
+          <!-- Advanced Filters & Sort -->
+          <div
+            class="mt-6 pt-6 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4"
+          >
+            <!-- Amenities Dropdown (Custom implementation for aesthetics) -->
+            <div class="relative group z-20">
+              <button
+                class="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-slate-200 rounded-lg text-slate-600 hover:border-primary-500 hover:text-primary-600 transition-colors"
+                onclick="toggleAmenitiesDropdown()"
+              >
+                <i class="fas fa-concierge-bell"></i>
+                <span>Équipements</span>
+                <i
+                  class="fas fa-chevron-down text-xs ml-1 transition-transform group-hover:rotate-180"
+                ></i>
+              </button>
+              <div
+                class="hidden absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 p-4 grid grid-cols-1 gap-2"
+                id="amenitiesFilter"
+              >
+                <label
+                  class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    value="wifi"
+                    onchange="filterWorkspaces()"
+                    class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500 border-gray-300"
+                  />
+                  <span class="text-sm text-slate-600">Wifi</span>
+                </label>
+                <label
+                  class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    value="café"
+                    onchange="filterWorkspaces()"
+                    class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500 border-gray-300"
+                  />
+                  <span class="text-sm text-slate-600">Café</span>
+                </label>
+                <label
+                  class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    value="imprimante"
+                    onchange="filterWorkspaces()"
+                    class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500 border-gray-300"
+                  />
+                  <span class="text-sm text-slate-600">Imprimante</span>
+                </label>
+                <label
+                  class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    value="parking"
+                    onchange="filterWorkspaces()"
+                    class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500 border-gray-300"
+                  />
+                  <span class="text-sm text-slate-600">Parking</span>
+                </label>
+                <label
+                  class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    value="salle de réunion"
+                    onchange="filterWorkspaces()"
+                    class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500 border-gray-300"
+                  />
+                  <span class="text-sm text-slate-600">Salle de réunion</span>
+                </label>
+                <label
+                  class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    value="climatisation"
+                    onchange="filterWorkspaces()"
+                    class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500 border-gray-300"
+                  />
+                  <span class="text-sm text-slate-600">Climatisation</span>
+                </label>
+              </div>
+            </div>
 
-          <button onclick="resetFilters()" class="btn btn-outline btn-sm">
-            <i class="fas fa-undo"></i> Réinitialiser
-          </button>
+            <div class="flex items-center gap-4 w-full md:w-auto">
+              <select
+                id="sortFilter"
+                onchange="sortWorkspaces()"
+                class="px-4 py-2 bg-gray-50 border border-slate-200 rounded-lg text-slate-600 focus:ring-2 focus:ring-primary-200 focus:border-primary-500 outline-none text-sm"
+              >
+                <option value="newest">Plus récents</option>
+                <option value="price_asc">Prix croissant</option>
+                <option value="price_desc">Prix décroissant</option>
+                <option value="capacity">Capacité</option>
+              </select>
+
+              <button
+                onclick="resetFilters()"
+                class="px-4 py-2 text-sm text-slate-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+              >
+                <i class="fas fa-undo mr-1"></i> Réinitialiser
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Workspaces Grid -->
-    <main class="container">
-      <div class="section-header">
-        <h2>Espaces de Coworking</h2>
-        <div class="section-actions">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+          <span class="w-1 h-8 bg-primary-600 rounded-full inline-block"></span>
+          Espaces de Coworking
+        </h2>
+        <div class="flex gap-3">
           <button
             onclick="openAddWorkspaceModal()"
-            class="btn btn-primary btn-sm"
+            class="hidden px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors shadow-md shadow-primary-500/20"
             id="addWorkspaceBtn"
-            style="display: none"
           >
-            <i class="fas fa-plus"></i> Ajouter un espace
+            <i class="fas fa-plus mr-2"></i> Ajouter un espace
           </button>
           <button
             onclick="toggleView()"
-            class="btn btn-outline btn-sm btn-sssss"
+            class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:border-primary-600 hover:text-primary-600 transition-colors flex items-center gap-2"
           >
             <i class="fas fa-th" id="viewIcon"></i>
             <span id="viewText">Vue Grille</span>
@@ -245,82 +517,152 @@
         </div>
       </div>
 
-      <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <p>Chargement des espaces...</p>
+      <!-- Loading State -->
+      <div class="py-20 text-center" id="loading">
+        <div
+          class="w-12 h-12 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mx-auto mb-4"
+        ></div>
+        <p class="text-slate-500 font-medium">
+          Chargement des espaces en cours...
+        </p>
       </div>
 
-      <div id="workspacesContainer" class="workspaces-grid">
+      <!-- Grid Container -->
+      <div
+        id="workspacesContainer"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+      >
         <!-- Workspaces will be loaded here -->
       </div>
 
-      <div class="pagination" id="pagination">
+      <!-- Pagination -->
+      <div class="mt-12 flex justify-center" id="pagination">
         <!-- Pagination will be loaded here -->
       </div>
 
-      <div class="no-results" id="noResults" style="display: none">
-        <i class="fas fa-search"></i>
-        <h3>Aucun espace trouvé</h3>
-        <p>Essayez de modifier vos critères de recherche</p>
+      <!-- No Results -->
+      <div
+        class="hidden py-16 text-center bg-white rounded-2xl border border-dashed border-gray-300"
+        id="noResults"
+      >
+        <div
+          class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 mx-auto mb-4 text-2xl"
+        >
+          <i class="fas fa-search"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-slate-800 mb-2">
+          Aucun espace trouvé
+        </h3>
+        <p class="text-slate-500">
+          Nous n'avons trouvé aucun espace correspondant à vos critères.
+        </p>
+        <button
+          onclick="resetFilters()"
+          class="mt-4 text-primary-600 font-medium hover:underline"
+        >
+          Réinitialiser les filtres
+        </button>
       </div>
     </main>
 
-    <!-- Stats Section -->
-    <!-- <section class="stats-section">
-        <div class="container">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <i class="fas fa-building"></i>
-                    <h3 id="totalWorkspaces">0</h3>
-                    <p>Espaces listés</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-users"></i>
-                    <h3 id="totalCapacity">0</h3>
-                    <p>Places totales</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <h3 id="totalCities">0</h3>
-                    <p>Villes</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-heart"></i>
-                    <h3 id="totalFavorites">0</h3>
-                    <p>Favoris</p>
-                </div>
-            </div>
-        </div>
-    </section> -->
-
     <!-- Footer -->
-    <footer class="footer">
-      <div class="container">
-        <div class="footer-content">
-          <div class="footer-section">
-            <h3>Coworking Manager</h3>
-            <p>La plateforme de gestion d'espaces de coworking au Maroc</p>
-            <div class="social-links">
-              <a href="#"><i class="fab fa-facebook"></i></a>
-              <a href="#"><i class="fab fa-twitter"></i></a>
-              <a href="#"><i class="fab fa-linkedin"></i></a>
-              <a href="#"><i class="fab fa-instagram"></i></a>
+    <footer class="bg-white border-t border-gray-200 pt-16 pb-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+          <div class="space-y-4">
+            <div
+              class="flex items-center gap-2 text-xl font-bold text-slate-800"
+            >
+              <i class="fas fa-building text-primary-600"></i>
+              <span>Coworking Manager</span>
+            </div>
+            <p class="text-slate-500 leading-relaxed">
+              La plateforme de référence pour trouver et gérer des espaces de
+              coworking au Maroc. Simple, rapide et efficace.
+            </p>
+            <div class="flex gap-4 pt-2">
+              <a
+                href="#"
+                class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-slate-400 hover:bg-primary-50 hover:text-primary-600 transition-all duration-300"
+              >
+                <i class="fab fa-facebook-f"></i>
+              </a>
+              <a
+                href="#"
+                class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-slate-400 hover:bg-primary-50 hover:text-primary-600 transition-all duration-300"
+              >
+                <i class="fab fa-twitter"></i>
+              </a>
+              <a
+                href="#"
+                class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-slate-400 hover:bg-primary-50 hover:text-primary-600 transition-all duration-300"
+              >
+                <i class="fab fa-linkedin-in"></i>
+              </a>
+              <a
+                href="#"
+                class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-slate-400 hover:bg-primary-50 hover:text-primary-600 transition-all duration-300"
+              >
+                <i class="fab fa-instagram"></i>
+              </a>
             </div>
           </div>
-          <div class="footer-section">
-            <h4>Liens rapides</h4>
-            <a href="index.html">Accueil</a>
-            <a href="pages/favorites.html">Mes Favoris</a>
-            <a href="pages/scraping.html">Scraping Automatique</a>
+
+          <div>
+            <h4 class="text-lg font-bold text-slate-800 mb-6">Liens rapides</h4>
+            <ul class="space-y-3">
+              <li>
+                <a
+                  href="index.html"
+                  class="text-slate-500 hover:text-primary-600 transition-colors"
+                  >Accueil</a
+                >
+              </li>
+              <li>
+                <a
+                  href="pages/favorites.html"
+                  class="text-slate-500 hover:text-primary-600 transition-colors"
+                  >Mes Favoris</a
+                >
+              </li>
+              <li>
+                <a
+                  href="pages/scraping.html"
+                  class="text-slate-500 hover:text-primary-600 transition-colors"
+                  >Scraping Automatique</a
+                >
+              </li>
+              <li>
+                <a
+                  href="pages/register.html"
+                  class="text-slate-500 hover:text-primary-600 transition-colors"
+                  >Devenir partenaire</a
+                >
+              </li>
+            </ul>
           </div>
-          <div class="footer-section">
-            <h4>Contact</h4>
-            <p><i class="fas fa-envelope"></i> contact@coworkingmanager.ma</p>
-            <p><i class="fas fa-phone"></i> +212 5 XX XX XX XX</p>
+
+          <div>
+            <h4 class="text-lg font-bold text-slate-800 mb-6">Contact</h4>
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3 text-slate-500">
+                <i class="fas fa-map-marker-alt mt-1 text-primary-600"></i>
+                <span>Technopark, Casablanca, Maroc</span>
+              </li>
+              <li class="flex items-center gap-3 text-slate-500">
+                <i class="fas fa-envelope text-primary-600"></i>
+                <span>contact@coworkingmanager.ma</span>
+              </li>
+              <li class="flex items-center gap-3 text-slate-500">
+                <i class="fas fa-phone text-primary-600"></i>
+                <span>+212 5 XX XX XX XX</span>
+              </li>
+            </ul>
           </div>
         </div>
-        <div class="footer-bottom">
-          <p>
+
+        <div class="pt-8 border-t border-gray-100 text-center">
+          <p class="text-slate-400 text-sm">
             &copy; 2025 Coworking Manager By Matrix Fed(FAZAZI). Tous droits
             réservés.
           </p>
@@ -329,156 +671,303 @@
     </footer>
 
     <!-- Add Workspace Modal -->
-    <div class="modal" id="addWorkspaceModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 id="modalTitle">Ajouter un espace de coworking</h3>
-          <button
-            class="close-btn btn btn-danger btn-sm"
-            onclick="closeModal('addWorkspaceModal')"
-          >
-            &times;
-          </button>
-        </div>
-        <div class="modal-body">
-          <form id="addWorkspaceForm" onsubmit="handleWorkspaceSubmit(event)">
-            <input type="hidden" id="workspaceId" />
-            <div class="form-group">
-              <label for="workspaceName">Nom de l'espace *</label>
-              <input type="text" id="workspaceName" required />
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="workspaceCapacity">Capacité (personnes) *</label>
-                <input type="number" id="workspaceCapacity" min="1" required />
-              </div>
-              <div class="form-group">
-                <label for="workspacePrice">Prix par jour (DH) *</label>
-                <input
-                  type="number"
-                  id="workspacePrice"
-                  step="0.01"
-                  min="0"
-                  required
-                />
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="workspaceCity">Ville *</label>
-              <input type="text" id="workspaceCity" list="cities" required />
-              <datalist id="cities">
-                <option value="Casablanca"></option>
-                <option value="Marrakech"></option>
-                <option value="Rabat"></option>
-                <option value="Fès"></option>
-                <option value="Tanger"></option>
-                <option value="Agadir"></option>
-                <option value="Meknès"></option>
-                <option value="Oujda"></option>
-                <option value="Tétouan"></option>
-                <option value="Safi"></option>
-              </datalist>
-            </div>
-            <div class="form-group">
-              <label>Équipements *</label>
-              <div class="amenities-grid">
-                <label class="amenity-checkbox">
-                  <input type="checkbox" name="amenities" value="wifi" />
-                  <i class="fas fa-wifi"></i> Wifi
-                </label>
-                <label class="amenity-checkbox">
-                  <input type="checkbox" name="amenities" value="café" />
-                  <i class="fas fa-coffee"></i> Café
-                </label>
-                <label class="amenity-checkbox">
-                  <input type="checkbox" name="amenities" value="imprimante" />
-                  <i class="fas fa-print"></i> Imprimante
-                </label>
-                <label class="amenity-checkbox">
-                  <input type="checkbox" name="amenities" value="parking" />
-                  <i class="fas fa-parking"></i> Parking
-                </label>
-                <label class="amenity-checkbox">
-                  <input
-                    type="checkbox"
-                    name="amenities"
-                    value="salle de réunion"
-                  />
-                  <i class="fas fa-users"></i> Salle de réunion
-                </label>
-                <label class="amenity-checkbox">
-                  <input
-                    type="checkbox"
-                    name="amenities"
-                    value="climatisation"
-                  />
-                  <i class="fas fa-snowflake"></i> Climatisation
-                </label>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="workspaceStatus">Statut</label>
-              <select id="workspaceStatus">
-                <option value="available">Disponible</option>
-                <option value="full">Complet</option>
-              </select>
-            </div>
-            <div>
-              <label>Image de l'espace</label>
-              <div class="image-upload-container">
-                <div class="image-preview" id="imagePreview">
-                  <img
-                    src=""
-                    alt="Aperçu"
-                    id="previewImg"
-                    style="display: none"
-                  />
-                  <div class="upload-placeholder" id="uploadPlaceholder">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <p>Cliquez ou glissez une image ici</p>
-                  </div>
-                </div>
-                <input
-                  type="file"
-                  id="workspaceImageFile"
-                  accept="image/*"
-                  style="display: none"
-                />
-                <button
-                  type="button"
-                  class="btn btn-outline btn-sm"
-                  onclick="document.getElementById('workspaceImageFile').click()"
-                >
-                  <i class="fas fa-image"></i> Choisir une image locale
-                </button>
+    <div
+      class="fixed inset-0 z-[100] hidden"
+      id="addWorkspaceModal"
+      aria-labelledby="modal-title"
+      role="dialog"
+      aria-modal="true"
+    >
+      <!-- Backdrop -->
+      <div
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity opacity-0"
+        id="modalBackdrop"
+      ></div>
 
-                <div class="url-input-group" style="margin-top: 10px">
-                  <label for="workspaceImage" style="font-size: 0.9em"
-                    >Ou via URL :</label
+      <div class="fixed inset-0 z-10 overflow-y-auto">
+        <div
+          class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+        >
+          <!-- Modal Panel -->
+          <div
+            class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-xl opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            id="modalPanel"
+          >
+            <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+              <div
+                class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4"
+              >
+                <h3 class="text-xl font-bold text-slate-900" id="modalTitle">
+                  Ajouter un espace
+                </h3>
+                <button
+                  onclick="closeModal('addWorkspaceModal')"
+                  class="text-slate-400 hover:text-slate-600 transition-colors focus:outline-none"
+                >
+                  <i class="fas fa-times text-xl"></i>
+                </button>
+              </div>
+
+              <form
+                id="addWorkspaceForm"
+                onsubmit="handleWorkspaceSubmit(event)"
+                class="space-y-5"
+              >
+                <input type="hidden" id="workspaceId" />
+
+                <div>
+                  <label
+                    for="workspaceName"
+                    class="block text-sm font-medium text-slate-700 mb-1"
+                    >Nom de l'espace *</label
                   >
                   <input
-                    type="url"
-                    id="workspaceImage"
-                    name="image_url"
-                    placeholder="https://exemple.com/image.jpg"
+                    type="text"
+                    id="workspaceName"
+                    required
+                    class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all"
+                    placeholder="Ex: TechHub Casa"
                   />
                 </div>
-              </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      for="workspaceCapacity"
+                      class="block text-sm font-medium text-slate-700 mb-1"
+                      >Capacité *</label
+                    >
+                    <input
+                      type="number"
+                      id="workspaceCapacity"
+                      min="1"
+                      required
+                      class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all"
+                      placeholder="0"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="workspacePrice"
+                      class="block text-sm font-medium text-slate-700 mb-1"
+                      >Prix / jour (DH) *</label
+                    >
+                    <input
+                      type="number"
+                      id="workspacePrice"
+                      step="0.01"
+                      min="0"
+                      required
+                      class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all"
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    for="workspaceCity"
+                    class="block text-sm font-medium text-slate-700 mb-1"
+                    >Ville *</label
+                  >
+                  <input
+                    type="text"
+                    id="workspaceCity"
+                    list="cities"
+                    required
+                    class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all"
+                    placeholder="Saisir ou choisir une ville"
+                  />
+                  <datalist id="cities">
+                    <option value="Casablanca"></option>
+                    <option value="Marrakech"></option>
+                    <option value="Rabat"></option>
+                    <option value="Fès"></option>
+                    <option value="Tanger"></option>
+                    <option value="Agadir"></option>
+                  </datalist>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-slate-700 mb-2"
+                    >Équipements *</label
+                  >
+                  <div class="grid grid-cols-2 gap-3">
+                    <label
+                      class="flex items-center space-x-3 p-3 border border-slate-100 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        name="amenities"
+                        value="wifi"
+                        class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500 border-gray-300"
+                      />
+                      <span class="text-sm text-slate-600"
+                        ><i class="fas fa-wifi w-5 text-slate-400"></i>
+                        Wifi</span
+                      >
+                    </label>
+                    <label
+                      class="flex items-center space-x-3 p-3 border border-slate-100 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        name="amenities"
+                        value="café"
+                        class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500 border-gray-300"
+                      />
+                      <span class="text-sm text-slate-600"
+                        ><i class="fas fa-coffee w-5 text-slate-400"></i>
+                        Café</span
+                      >
+                    </label>
+                    <label
+                      class="flex items-center space-x-3 p-3 border border-slate-100 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        name="amenities"
+                        value="imprimante"
+                        class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500 border-gray-300"
+                      />
+                      <span class="text-sm text-slate-600"
+                        ><i class="fas fa-print w-5 text-slate-400"></i>
+                        Imprimante</span
+                      >
+                    </label>
+                    <label
+                      class="flex items-center space-x-3 p-3 border border-slate-100 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        name="amenities"
+                        value="parking"
+                        class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500 border-gray-300"
+                      />
+                      <span class="text-sm text-slate-600"
+                        ><i class="fas fa-parking w-5 text-slate-400"></i>
+                        Parking</span
+                      >
+                    </label>
+                    <label
+                      class="flex items-center space-x-3 p-3 border border-slate-100 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        name="amenities"
+                        value="salle de réunion"
+                        class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500 border-gray-300"
+                      />
+                      <span class="text-sm text-slate-600"
+                        ><i class="fas fa-users w-5 text-slate-400"></i>
+                        Réunion</span
+                      >
+                    </label>
+                    <label
+                      class="flex items-center space-x-3 p-3 border border-slate-100 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        name="amenities"
+                        value="climatisation"
+                        class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500 border-gray-300"
+                      />
+                      <span class="text-sm text-slate-600"
+                        ><i class="fas fa-snowflake w-5 text-slate-400"></i>
+                        Clim</span
+                      >
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    for="workspaceStatus"
+                    class="block text-sm font-medium text-slate-700 mb-1"
+                    >Statut</label
+                  >
+                  <select
+                    id="workspaceStatus"
+                    class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all"
+                  >
+                    <option value="available">Disponible</option>
+                    <option value="full">Complet</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-slate-700 mb-2"
+                    >Image de l'espace</label
+                  >
+                  <div class="space-y-3">
+                    <!-- Image Preview Area -->
+                    <div
+                      class="relative w-full h-48 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center overflow-hidden group hover:border-primary-400 transition-colors"
+                      id="imagePreview"
+                    >
+                      <img
+                        src=""
+                        alt="Aperçu"
+                        id="previewImg"
+                        class="absolute inset-0 w-full h-full object-cover hidden"
+                      />
+                      <div
+                        class="text-center p-4 transition-opacity"
+                        id="uploadPlaceholder"
+                      >
+                        <i
+                          class="fas fa-cloud-upload-alt text-3xl text-slate-400 mb-2 group-hover:text-primary-500 transition-colors"
+                        ></i>
+                        <p class="text-sm text-slate-500">
+                          Cliquez ou glissez une image ici
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="flex gap-3">
+                      <input
+                        type="file"
+                        id="workspaceImageFile"
+                        accept="image/*"
+                        class="hidden"
+                      />
+                      <button
+                        type="button"
+                        onclick="document.getElementById('workspaceImageFile').click()"
+                        class="flex-1 py-2 px-4 border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-gray-50 hover:text-primary-600 transition-colors"
+                      >
+                        <i class="fas fa-folder-open mr-2"></i> Choisir fichier
+                      </button>
+                      <input
+                        type="url"
+                        id="workspaceImage"
+                        name="image_url"
+                        placeholder="Ou coller une URL..."
+                        class="flex-[2] px-4 py-2 rounded-lg border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none text-sm transition-all"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex gap-3 pt-4 border-t border-gray-100 mt-6">
+                  <button
+                    type="button"
+                    onclick="closeModal('addWorkspaceModal')"
+                    class="flex-1 px-4 py-3 border border-slate-200 rounded-xl text-slate-600 font-semibold hover:bg-gray-50 transition-colors"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    class="flex-[2] px-4 py-3 bg-primary-600 text-white rounded-xl font-semibold hover:bg-primary-700 shadow-lg shadow-primary-500/30 transition-all hover:-translate-y-0.5"
+                  >
+                    <i class="fas fa-check mr-2"></i>
+                    <span id="submitBtnText">Enregistrer</span>
+                  </button>
+                </div>
+              </form>
             </div>
-            <div class="form-actions">
-              <button
-                type="button"
-                class="btn btn-outline"
-                onclick="closeModal('addWorkspaceModal')"
-              >
-                Annuler
-              </button>
-              <button type="submit" class="btn btn-primary">
-                <i class="fas fa-plus"></i>
-                <span id="submitBtnText">Ajouter l'espace</span>
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>
@@ -496,7 +985,92 @@
         checkAuth();
         loadWorkspaces();
         setupEventListeners();
+
+        // Mobile menu toggle logic
+        const menuToggle = document.getElementById("menuToggle");
+        const navLinks = document.getElementById("navLinks");
+
+        if (menuToggle && navLinks) {
+          menuToggle.addEventListener("click", () => {
+            navLinks.classList.toggle("hidden");
+          });
+        }
       });
+
+      // Update modal logic for new Tailwind structure
+      window.openModal = function (modalId) {
+        const modal = document.getElementById(modalId);
+        const backdrop = document.getElementById("modalBackdrop");
+        const panel = document.getElementById("modalPanel");
+
+        if (modal) {
+          modal.classList.remove("hidden");
+          // Trigger animations
+          setTimeout(() => {
+            if (backdrop) {
+              backdrop.classList.remove("opacity-0");
+              backdrop.classList.add("opacity-100");
+            }
+            if (panel) {
+              panel.classList.remove(
+                "opacity-0",
+                "translate-y-4",
+                "sm:translate-y-0",
+                "sm:scale-95"
+              );
+              panel.classList.add(
+                "opacity-100",
+                "translate-y-0",
+                "sm:scale-100"
+              );
+            }
+          }, 10);
+        }
+      };
+
+      window.closeModal = function (modalId) {
+        const modal = document.getElementById(modalId);
+        const backdrop = document.getElementById("modalBackdrop");
+        const panel = document.getElementById("modalPanel");
+
+        if (modal) {
+          if (backdrop) {
+            backdrop.classList.remove("opacity-100");
+            backdrop.classList.add("opacity-0");
+          }
+          if (panel) {
+            panel.classList.remove(
+              "opacity-100",
+              "translate-y-0",
+              "sm:scale-100"
+            );
+            panel.classList.add(
+              "opacity-0",
+              "translate-y-4",
+              "sm:translate-y-0",
+              "sm:scale-95"
+            );
+          }
+
+          // Wait for animation to finish
+          setTimeout(() => {
+            modal.classList.add("hidden");
+          }, 300);
+        }
+      };
+
+      // Override the global openAddWorkspaceModal for specific animation handling
+      window.openAddWorkspaceModal = function () {
+        document.getElementById("addWorkspaceForm").reset();
+        document.getElementById("workspaceId").value = "";
+        document.getElementById("modalTitle").textContent = "Ajouter un espace";
+        document.getElementById("submitBtnText").textContent =
+          "Ajouter l'espace";
+        document.getElementById("previewImg").style.display = "none";
+        document.getElementById("uploadPlaceholder").style.display = "block";
+
+        openModal("addWorkspaceModal");
+      };
     </script>
   </body>
 </html>

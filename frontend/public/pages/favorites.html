@@ -1,90 +1,140 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="bg-gray-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mes Favoris - Coworking Manager</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/output.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <a href="../index.html" class="logo">
-                <i class="fas fa-building"></i>
-                <span>Coworking Manager</span>
-            </a>
-            <button class="menu-toggle" id="menuToggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="nav-links" id="navLinks">
-                <a href="../index.html"><i class="fas fa-home"></i> Accueil</a>
-                <a href="favorites.html" class="active"><i class="fas fa-heart"></i> Mes Favoris</a>
-                <a href="scraping.html"><i class="fas fa-robot"></i> Scraping</a>
-                <div class="user-section" id="userSection">
-                    <a href="profile.html" class="user-info" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-user-circle"></i>
-                        <span id="usernameDisplay"></span>
-                    </a>
-                    <button onclick="logout()" class="btn btn-danger btn-sm" style="margin-left: 10px;">
-                        <i class="fas fa-sign-out-alt"></i> Déconnexion
-                    </button>
-                </div>
+<body class="text-slate-800 font-sans antialiased">
+    
+    <!-- Navigation (Duplicated from index.html for consistency, usually would be a component) -->
+    <nav class="fixed w-full z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
+          <a href="../index.html" class="flex items-center gap-3 decoration-0 group">
+            <div class="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center text-white text-lg shadow-lg shadow-primary-500/30 group-hover:scale-105 transition-transform duration-300">
+              <i class="fas fa-building"></i>
             </div>
+            <span class="text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">Coworking Manager</span>
+          </a>
+
+          <button class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 text-slate-600 focus:outline-none" id="menuToggle">
+            <i class="fas fa-bars text-xl"></i>
+          </button>
+
+          <div class="hidden md:flex items-center gap-8" id="navLinksDesktop">
+            <a href="../index.html" class="text-slate-600 font-medium hover:text-primary-600 transition-colors duration-200">
+              <i class="fas fa-home mr-2"></i>Accueil
+            </a>
+            <a href="favorites.html" class="text-primary-600 font-medium border-b-2 border-primary-600 pb-1">
+              <i class="fas fa-heart mr-2"></i>Mes Favoris
+            </a>
+            <a href="scraping.html" class="text-slate-600 font-medium hover:text-primary-600 transition-colors duration-200">
+              <i class="fas fa-robot mr-2"></i>Scraping
+            </a>
+            
+            <div class="user-section flex items-center gap-4" id="userSection">
+               <a href="profile.html" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors" title="Gérer mon profil">
+                <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
+                   <i class="fas fa-user text-sm"></i>
+                </div>
+                <span id="usernameDisplay" class="font-medium text-slate-700">User</span>
+              </a>
+              <button onclick="logout()" class="w-9 h-9 flex items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors" title="Déconnexion">
+                <i class="fas fa-sign-out-alt"></i>
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
+       <!-- Mobile Menu -->
+      <div class="md:hidden hidden bg-white border-t border-gray-100 absolute w-full left-0 shadow-lg" id="navLinks">
+        <div class="px-4 py-6 space-y-4 flex flex-col">
+          <a href="../index.html" class="flex items-center gap-3 text-slate-600 font-medium p-2 rounded-lg hover:bg-gray-50">
+            <i class="fas fa-home w-5"></i>Accueil
+          </a>
+          <a href="favorites.html" class="flex items-center gap-3 text-primary-600 font-medium p-2 rounded-lg bg-primary-50">
+            <i class="fas fa-heart w-5"></i>Mes Favoris
+          </a>
+          <a href="scraping.html" class="flex items-center gap-3 text-slate-600 font-medium p-2 rounded-lg hover:bg-gray-50">
+            <i class="fas fa-robot w-5"></i>Scraping
+          </a>
+        </div>
+      </div>
     </nav>
 
-    <main class="container">
-        <div class="page-header">
-            <h1><i class="fas fa-heart"></i> Mes Favoris</h1>
-            <p>Retrouvez tous vos espaces de coworking préférés</p>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+               <h1 class="text-3xl font-bold text-slate-900 mb-2">Mes Favoris</h1>
+               <p class="text-slate-500">Retrouvez tous vos espaces de coworking préférés</p>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-red-500 text-xl">
+               <i class="fas fa-heart"></i>
+            </div>
         </div>
 
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Chargement de vos favoris...</p>
+        <div class="py-20 text-center" id="loading">
+            <div class="w-12 h-12 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="text-slate-500 font-medium">Chargement de vos favoris...</p>
         </div>
 
-        <div id="favoritesContainer" class="workspaces-grid">
+        <div id="favoritesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <!-- Favorites will be loaded here -->
         </div>
 
-        <div class="pagination" id="pagination">
+        <div class="mt-12 flex justify-center" id="pagination">
             <!-- Pagination will be loaded here -->
         </div>
 
-        <div class="no-results" id="noResults" style="display: none;">
-            <i class="fas fa-heart"></i>
-            <h3>Aucun favori pour le moment</h3>
-            <p>Commencez par ajouter des espaces à vos favoris depuis la page d'accueil</p>
-            <a href="../index.html" class="btn btn-primary">
-                <i class="fas fa-search"></i> Explorer les espaces
+        <div class="hidden flex-col items-center justify-center py-20 bg-white rounded-3xl border border-dashed border-gray-300" id="noResults">
+            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center text-gray-300 text-3xl mb-6">
+                <i class="far fa-heart"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-2">Aucun favori pour le moment</h3>
+            <p class="text-slate-500 mb-8 text-center max-w-md">
+                Vous n'avez pas encore ajouté d'espaces à vos favoris. Explorez les espaces disponibles et cliquez sur le cœur pour les retrouver ici.
+            </p>
+            <a href="../index.html" class="px-6 py-3 bg-primary-600 text-white rounded-xl font-semibold shadow-lg shadow-primary-500/30 hover:bg-primary-700 hover:-translate-y-0.5 transition-all duration-300">
+                <i class="fas fa-search mr-2"></i> Explorer les espaces
             </a>
         </div>
     </main>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Coworking Manager</h3>
-                    <p>La plateforme de gestion d'espaces de coworking au Maroc</p>
-                </div>
-                <!-- ... reste du footer ... -->
-            </div>
-        </div>
+    <footer class="bg-white border-t border-gray-200 pt-16 pb-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <p class="text-slate-400 text-sm">
+            &copy; 2025 Coworking Manager. Tous droits réservés.
+        </p>
+      </div>
     </footer>
 
     <script src="../js/notifications.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/auth.js"></script>
+    <script src="../js/workspace.js"></script> <!-- Included because we reuse createWorkspaceCard mostly -->
     <script src="../js/favorites.js"></script>
     <script>
-        // Vérifier l'authentification
         document.addEventListener('DOMContentLoaded', function() {
             if (!AuthManager.requireAuth()) return;
             AuthManager.checkAuth();
-            loadFavorites();
+            
+            // Re-use logic or call existing loadFavorites
+            if(window.loadFavorites) {
+                loadFavorites();
+            }
+            
+            const menuToggle = document.getElementById('menuToggle');
+            const navLinks = document.getElementById('navLinks');
+            
+            if(menuToggle && navLinks) {
+                menuToggle.addEventListener('click', () => {
+                    navLinks.classList.toggle('hidden');
+                });
+            }
         });
     </script>
 </body>

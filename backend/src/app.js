@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const dotenv = require('dotenv');
+const path = require('path');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
@@ -26,10 +28,15 @@ app.use(cookieParser());
 
 // Middleware CORS
 const corsOptions = {
-    origin: ['http://localhost:5500', 'http://127.0.0.1:5500', 'https://coworking-management-tawny.vercel.app'],
+    origin: [
+        'http://localhost:5500', 
+        'http://127.0.0.1:5500', 
+        'https://coworking-management-tawny.vercel.app',
+        'https://coworking-management-izrei94lk-matrixs-projects-ced4ab94.vercel.app'
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true, // Allow cookies
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    credentials: true,
     optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
@@ -46,8 +53,8 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 jours
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: true, // Always true since we are on HTTPS in production or handled by proxy
+        sameSite: 'lax', // Better for same-site cookie handling
         httpOnly: true
     }
 }));

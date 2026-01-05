@@ -2,23 +2,41 @@
 class AuthManager {
   // Vérifier l'état d'authentification
   static async checkAuth() {
-    const user = localStorage.getItem("user");
+    console.log("🔍 Checking auth state...");
+    const savedUser = localStorage.getItem("user");
+    
+    // Si on a un utilisateur local, on met à jour l'UI immédiatement pour éviter le flash
+    if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        this.updateUI(true, userData);
+        console.log("✅ UI synced with local storage");
+      } catch (e) {
+        console.error("Failed to parse local user data", e);
+      }
+    }
 
-    // On vérifie toujours auprès du serveur (qui vérifiera le cookie de session)
+    // On vérifie ensuite auprès du serveur (qui vérifiera le cookie de session)
     try {
+      console.log("📡 Verifying session with server...");
       const response = await CoworkingApi.getProfile();
       if (response.success) {
         const userData = response.data.user;
         localStorage.setItem("user", JSON.stringify(userData));
         this.updateUI(true, userData);
+        console.log("✅ Session verified with server");
         return true;
       }
     } catch (error) {
-      console.warn("Session expired or invalid:", error.message);
+      console.warn("📡 Session verification failed:", error.message);
+      // Si l'erreur est 401 (Non autorisé), on déconnecte
+      if (error.status === 401) {
+        console.log("🚫 Session expired on server. Logging out.");
+        this.logout(false);
+      }
     }
 
-    this.logout(false); // Logout without notification/redirect if silent check fails
-    return false;
+    return savedUser !== null;
   }
 
   // Mettre à jour l'interface utilisateur

@@ -58,10 +58,12 @@ class AuthController {
     static async login(req, res) {
         try {
             const { email, password } = req.body;
+            console.log(`[AUTH] Login attempt for email: ${email}`);
 
             // Trouver l'utilisateur
             const user = await User.findByEmail(email);
             if (!user) {
+                console.log(`[AUTH] User not found: ${email}`);
                 return res.status(401).json(
                     ApiResponse.error('Invalid email or password')
                 );
@@ -70,10 +72,13 @@ class AuthController {
             // Vérifier le mot de passe
             const isValidPassword = await User.verifyPassword(password, user.password_hash);
             if (!isValidPassword) {
+                console.log(`[AUTH] Invalid password for email: ${email}`);
                 return res.status(401).json(
                     ApiResponse.error('Invalid email or password')
                 );
             }
+
+            console.log(`[AUTH] Password valid. Setting session for user ID: ${user.id}`);
 
             // Stocker l'utilisateur dans la session
             req.session.user = {
@@ -82,21 +87,30 @@ class AuthController {
                 email: user.email
             };
 
-            res.json(
-                ApiResponse.success(
-                    {
-                        user: {
-                            id: user.id,
-                            username: user.username,
-                            email: user.email,
-                            created_at: user.created_at
-                        }
-                    },
-                    'Login successful'
-                )
-            );
+            // Sauvegarder la session explicitement pour s'assurer qu'elle est écrite avant la réponse
+            req.session.save((err) => {
+                if (err) {
+                    console.error('[AUTH] Session save error:', err);
+                    return res.status(500).json(ApiResponse.error('Failed to save session'));
+                }
+                
+                console.log('[AUTH] Session saved successfully');
+                res.json(
+                    ApiResponse.success(
+                        {
+                            user: {
+                                id: user.id,
+                                username: user.username,
+                                email: user.email,
+                                created_at: user.created_at
+                            }
+                        },
+                        'Login successful'
+                    )
+                );
+            });
         } catch (error) {
-            console.error('Login error:', error);
+            console.error('[AUTH] Login error:', error);
             res.status(500).json(
                 ApiResponse.error(error.message || 'Login failed')
             );

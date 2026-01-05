@@ -55,7 +55,8 @@ class FavoritesManager {
     // Créer une carte de favori
     createFavoriteCard(workspace) {
         const card = document.createElement('div');
-        card.className = 'workspace-card';
+        // Card container matching workspace.js design
+        card.className = 'bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-xl hover:border-primary-100 transition-all duration-300 group flex flex-col h-full';
         card.dataset.id = workspace.id;
         
         // Formater les équipements
@@ -64,47 +65,66 @@ class FavoritesManager {
             : (typeof workspace.amenities === 'string' ? JSON.parse(workspace.amenities) : []);
         
         // Image par défaut si non fournie
-        const imageUrl = workspace.image_url || 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=400';
+        const imageUrl = workspace.image_url || 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=500';
         
         // Statut
-        const statusClass = workspace.status === 'available' ? 'status-available' : 'status-full';
+        const statusColors = workspace.status === 'available' 
+            ? 'bg-green-100 text-green-700 border-green-200' 
+            : 'bg-red-100 text-red-700 border-red-200';
         const statusText = workspace.status === 'available' ? 'Disponible' : 'Complet';
         
         // Prix formaté
         const formattedPrice = new Intl.NumberFormat('fr-MA', {
             style: 'currency',
-            currency: 'MAD'
+            currency: 'MAD',
+            maximumFractionDigits: 0
         }).format(workspace.price_per_day);
         
         card.innerHTML = `
-            <img src="${imageUrl}" alt="${workspace.name}" class="workspace-image">
-            <div class="workspace-content">
-                <div class="workspace-header">
-                    <h3 class="workspace-title">${workspace.name}</h3>
-                    <button class="favorite-btn active" data-id="${workspace.id}">
-                        <i class="fas fa-heart"></i>
-                    </button>
+            <div class="relative h-48 overflow-hidden">
+                <img src="${imageUrl}" alt="${workspace.name}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <button class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm shadow-md flex items-center justify-center text-red-500 hover:scale-110 transition-all duration-300 favorite-btn active" data-id="${workspace.id}">
+                    <i class="fas fa-heart"></i>
+                </button>
+                 <div class="absolute bottom-4 right-4 ${statusColors} text-xs font-semibold px-3 py-1 rounded-full border shadow-sm">
+                    ${statusText}
                 </div>
-                <div class="workspace-meta">
-                    <span><i class="fas fa-users"></i> ${workspace.capacity} pers.</span>
-                    <span><i class="fas fa-map-marker-alt"></i> ${workspace.city}</span>
+            </div>
+
+            <div class="p-5 flex-grow flex flex-col">
+                 <div class="flex justify-between items-start mb-2">
+                     <h3 class="text-lg font-bold text-slate-800 line-clamp-1 group-hover:text-primary-600 transition-colors">${workspace.name}</h3>
                 </div>
-                <div class="workspace-amenities">
-                    ${amenities.map(amenity => `
-                        <span class="amenity-tag">
-                            <i class="fas fa-${this.getAmenityIcon(amenity)}"></i>
+
+                <div class="flex flex-wrap gap-4 text-sm text-slate-500 mb-4">
+                    <div class="flex items-center gap-1.5">
+                        <i class="fas fa-map-marker-alt text-primary-500"></i>
+                        <span>${workspace.city}</span>
+                    </div>
+                     <div class="flex items-center gap-1.5">
+                        <i class="fas fa-users text-primary-500"></i>
+                        <span>${workspace.capacity} pers.</span>
+                    </div>
+                </div>
+
+                 <div class="flex flex-wrap gap-2 mb-6">
+                    ${amenities.slice(0, 3).map(amenity => `
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-50 text-slate-600 text-xs font-medium border border-slate-100">
+                            <i class="fas fa-${this.getAmenityIcon(amenity)} text-slate-400"></i>
                             ${amenity}
                         </span>
                     `).join('')}
+                     ${amenities.length > 3 ? `<span class="px-2 py-1 text-xs text-slate-400">+${amenities.length - 3}</span>` : ''}
                 </div>
-                <div class="workspace-footer">
-                    <div class="price">
-                        ${formattedPrice}
-                        <span>/jour</span>
+
+                <div class="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
+                    <div>
+                        <span class="text-2xl font-bold text-slate-900">${formattedPrice}</span>
+                        <span class="text-xs text-slate-500">/jour</span>
                     </div>
-                    <span class="status-badge ${statusClass}">${statusText}</span>
-                    <button class="btn btn-outline btn-sm" onclick="removeFromFavorites(${workspace.id})">
-                        <i class="fas fa-trash"></i> Retirer
+                    <button class="px-4 py-2 rounded-lg border border-red-100 bg-red-50 text-red-500 hover:bg-red-100 text-sm font-medium transition-colors" onclick="removeFromFavorites(${workspace.id})">
+                        <i class="fas fa-trash mr-2"></i> Retirer
                     </button>
                 </div>
             </div>

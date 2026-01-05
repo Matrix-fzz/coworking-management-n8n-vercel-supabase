@@ -4,9 +4,16 @@
   "description": "Frontend for Coworking Management",
   "scripts": {
     "start": "serve public",
-    "build": "echo 'No build step'"
+    "build": "echo 'No build step'",
+    "build:css": "tailwindcss -i ./src/input.css -o ./public/css/output.css",
+    "watch:css": "tailwindcss -i ./src/input.css -o ./public/css/output.css --watch"
   },
   "dependencies": {
     "serve": "^14.2.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.23",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.1"
   }
 }

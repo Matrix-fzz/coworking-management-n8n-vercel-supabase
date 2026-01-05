@@ -29,33 +29,46 @@ class AIAgent {
 
     createWidget() {
         const widgetHTML = `
-            <div class="chat-widget" id="ai-chat-widget">
-                <button class="chat-toggle" id="chat-toggle">
-                    <i class="fas fa-comment-alt"></i>
-                </button>
-                <div class="chat-container" id="chat-container">
-                    <div class="chat-header">
-                        <div class="chat-header-info">
-                            <i class="fas fa-robot"></i>
+            <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end" id="ai-chat-widget">
+                <!-- Chat Container -->
+                <div class="hidden flex-col w-[380px] h-[600px] max-h-[80vh] bg-white rounded-2xl shadow-2xl border border-slate-100 mb-4 overflow-hidden transition-all duration-300 origin-bottom-right transform scale-95 opacity-0" id="chat-container">
+                    <!-- Header -->
+                    <div class="bg-gradient-to-r from-primary-600 to-violet-600 p-4 flex justify-between items-center text-white shrink-0">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                                <i class="fas fa-robot text-lg"></i>
+                            </div>
                             <div>
-                                <h3>Assistant IA</h3>
-                                <p>En ligne</p>
+                                <h3 class="font-bold text-base m-0 leading-tight">Assistant IA</h3>
+                                <div class="flex items-center gap-1.5 opacity-90">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                                    <span class="text-xs font-medium">En ligne</span>
+                                </div>
                             </div>
                         </div>
-                        <button class="chat-close" id="chat-close">
+                        <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/20 transition-colors text-white focus:outline-none" id="chat-close">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
-                    <div class="chat-messages" id="chat-messages">
+                    
+                    <!-- Messages Area -->
+                    <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 scroll-smooth custom-scrollbar" id="chat-messages">
                         <!-- Messages walk in here -->
                     </div>
-                    <form class="chat-input-area" id="chat-form">
-                        <input type="text" class="chat-input" id="chat-input" placeholder="Posez votre question..." autocomplete="off">
-                        <button type="submit" class="chat-send" id="chat-send">
-                            <i class="fas fa-paper-plane"></i>
+                    
+                    <!-- Input Area -->
+                    <form class="p-4 bg-white border-t border-gray-100 shrink-0 flex gap-2" id="chat-form">
+                        <input type="text" class="flex-1 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all placeholder:text-slate-400 text-sm" id="chat-input" placeholder="Posez votre question..." autocomplete="off">
+                        <button type="submit" class="w-12 h-12 flex items-center justify-center rounded-xl bg-primary-600 text-white shadow-lg shadow-primary-500/30 hover:bg-primary-700 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed" id="chat-send">
+                            <i class="fas fa-paper-plane text-sm"></i>
                         </button>
                     </form>
                 </div>
+
+                <!-- Toggle Button -->
+                <button class="w-14 h-14 rounded-full bg-gradient-to-r from-primary-600 to-violet-600 text-white shadow-xl shadow-primary-900/20 flex items-center justify-center text-2xl hover:scale-110 active:scale-95 transition-all duration-300 group" id="chat-toggle">
+                    <i class="fas fa-comment-alt group-hover:rotate-12 transition-transform"></i>
+                </button>
             </div>
         `;
         
@@ -81,21 +94,43 @@ class AIAgent {
 
     toggleChat() {
         this.isOpen = !this.isOpen;
-        this.chatContainer.classList.toggle('active', this.isOpen);
+        // this.chatContainer.classList.toggle('active', this.isOpen); // Old class toggling
         
         const toggleBtn = document.getElementById('chat-toggle');
         if (this.isOpen) {
+            // Open state
+            this.chatContainer.classList.remove('hidden', 'scale-95', 'opacity-0');
+            this.chatContainer.classList.add('flex', 'scale-100', 'opacity-100');
+            
             toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i>';
+            toggleBtn.classList.add('rotate-180');
             this.inputField.focus();
         } else {
+            // Closed state
+            this.chatContainer.classList.remove('flex', 'scale-100', 'opacity-100');
+            this.chatContainer.classList.add('hidden', 'scale-95', 'opacity-0');
+            
             toggleBtn.innerHTML = '<i class="fas fa-comment-alt"></i>';
+             toggleBtn.classList.remove('rotate-180');
         }
     }
 
     addMessage(role, text) {
         const messageDiv = document.createElement('div');
-        messageDiv.className = `message message-${role}`;
-        messageDiv.textContent = text;
+        const isAI = role === 'ai';
+        
+        messageDiv.className = `flex w-full ${isAI ? 'justify-start' : 'justify-end'} animate-fade-in`;
+        
+        messageDiv.innerHTML = `
+            <div class="max-w-[80%] p-3.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
+                isAI 
+                ? 'bg-white text-slate-700 rounded-tl-none border border-gray-100' 
+                : 'bg-primary-600 text-white rounded-tr-none shadow-primary-500/20'
+            }">
+                ${text}
+            </div>
+        `;
+        
         this.messageContainer.appendChild(messageDiv);
         
         // Scroll to bottom
@@ -108,10 +143,12 @@ class AIAgent {
 
     showTyping() {
         const typingDiv = document.createElement('div');
-        typingDiv.className = 'message message-ai typing-indicator';
+        typingDiv.className = 'flex w-full justify-start animate-fade-in';
         typingDiv.innerHTML = `
-            <div class="typing">
-                <span></span><span></span><span></span>
+            <div class="bg-white p-4 rounded-2xl rounded-tl-none border border-gray-100 shadow-sm flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-slate-400 animate-bounce" style="animation-delay: 0s"></span>
+                <span class="w-2 h-2 rounded-full bg-slate-400 animate-bounce" style="animation-delay: 0.2s"></span>
+                <span class="w-2 h-2 rounded-full bg-slate-400 animate-bounce" style="animation-delay: 0.4s"></span>
             </div>
         `;
         typingDiv.id = 'typing-indicator';

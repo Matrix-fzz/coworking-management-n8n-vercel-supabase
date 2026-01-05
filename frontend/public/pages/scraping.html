@@ -1,112 +1,175 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="bg-gray-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scraping Automatique - Coworking Manager</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/output.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/agent.css">
 </head>
 
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <a href="../index.html" class="logo">
-                <i class="fas fa-building"></i>
-                <span>Coworking Manager</span>
-            </a>
-            <button class="menu-toggle" id="menuToggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="nav-links" id="navLinks">
-                <a href="../index.html"><i class="fas fa-home"></i> Accueil</a>
-                <a href="favorites.html"><i class="fas fa-heart"></i> Mes Favoris</a>
-                <a href="scraping.html" class="active"><i class="fas fa-robot"></i> Scraping</a>
-                <div class="user-section" id="userSection">
-                    <a href="profile.html" class="user-info" title="Gérer mon profil">
-                        <i class="fas fa-user-circle"></i>
-                        <span id="usernameDisplay"></span>
-                    </a>
-                    <button onclick="logout()" class="btn btn-danger btn-sm">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </div>
+<body class="text-slate-800 font-sans antialiased">
+    
+    <nav class="fixed w-full z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
+          <a href="../index.html" class="flex items-center gap-3 decoration-0 group">
+            <div class="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center text-white text-lg shadow-lg shadow-primary-500/30 group-hover:scale-105 transition-transform duration-300">
+              <i class="fas fa-building"></i>
             </div>
+            <span class="text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">Coworking Manager</span>
+          </a>
+
+          <button class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 text-slate-600 focus:outline-none" id="menuToggle">
+            <i class="fas fa-bars text-xl"></i>
+          </button>
+
+          <div class="hidden md:flex items-center gap-8" id="navLinksDesktop">
+            <a href="../index.html" class="text-slate-600 font-medium hover:text-primary-600 transition-colors duration-200">
+              <i class="fas fa-home mr-2"></i>Accueil
+            </a>
+            <a href="favorites.html" class="text-slate-600 font-medium hover:text-primary-600 transition-colors duration-200">
+              <i class="fas fa-heart mr-2"></i>Mes Favoris
+            </a>
+            <a href="scraping.html" class="text-primary-600 font-medium border-b-2 border-primary-600 pb-1">
+              <i class="fas fa-robot mr-2"></i>Scraping
+            </a>
+            
+            <div class="user-section flex items-center gap-4" id="userSection">
+               <a href="profile.html" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors" title="Gérer mon profil">
+                <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
+                   <i class="fas fa-user text-sm"></i>
+                </div>
+                <span id="usernameDisplay" class="font-medium text-slate-700">User</span>
+              </a>
+              <button onclick="logout()" class="w-9 h-9 flex items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors" title="Déconnexion">
+                <i class="fas fa-sign-out-alt"></i>
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
+      <!-- Mobile Menu -->
+      <div class="md:hidden hidden bg-white border-t border-gray-100 absolute w-full left-0 shadow-lg" id="navLinks">
+        <div class="px-4 py-6 space-y-4 flex flex-col">
+          <a href="../index.html" class="flex items-center gap-3 text-slate-600 font-medium p-2 rounded-lg hover:bg-gray-50">
+            <i class="fas fa-home w-5"></i>Accueil
+          </a>
+          <a href="favorites.html" class="flex items-center gap-3 text-slate-600 font-medium p-2 rounded-lg hover:bg-gray-50">
+            <i class="fas fa-heart w-5"></i>Mes Favoris
+          </a>
+           <a href="scraping.html" class="flex items-center gap-3 text-primary-600 font-medium p-2 rounded-lg bg-primary-50">
+            <i class="fas fa-robot w-5"></i>Scraping
+          </a>
+        </div>
+      </div>
     </nav>
 
-    <main class="container">
-        <div class="page-header center-text" style="text-align: center; margin-bottom: 3rem;">
-            <h1><i class="fas fa-robot"></i> Scraping Automatique</h1>
-            <p>Recherchez et importez automatiquement des espaces de coworking depuis Google Maps</p>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
+        <div class="text-center mb-12 animate-slide-up">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary-50 text-primary-600 text-3xl mb-4 shadow-sm">
+                <i class="fas fa-robot"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-slate-900 mb-2">Scraping Automatique</h1>
+            <p class="text-slate-500 max-w-2xl mx-auto">Recherchez et importez automatiquement des espaces de coworking depuis Google Maps</p>
         </div>
 
-        <div class="scraping-section">
-            <div class="profile-card" style="margin-bottom: 2rem;">
-                <div class="scraping-header" style="margin-bottom: 24px; text-align: left;">
-                    <h2 style="font-size: 1.5rem; margin-bottom: 8px;"><i class="fas fa-play-circle text-primary"></i> Lancer une recherche</h2>
-                    <p style="margin-bottom: 0;">Configurez votre recherche pour trouver de nouveaux espaces.</p>
-                </div>
-                
-                <form id="scrapingForm" onsubmit="triggerScraping(event)">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="scrapingCity">Ville cible</label>
-                            <div class="input-with-icon">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <input type="text" id="scrapingCity" required list="citiesList" placeholder="Ex: Casablanca">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            <!-- Search Config -->
+            <div class="lg:col-span-2 space-y-8">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 animate-fade-in delay-100">
+                    <div class="flex items-center gap-3 mb-6">
+                         <div class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
+                            <i class="fas fa-play"></i>
+                         </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900">Nouvelle recherche</h2>
+                            <p class="text-sm text-slate-500">Configurez les paramètres du robot</p>
+                        </div>
+                    </div>
+                    
+                    <form id="scrapingForm" onsubmit="triggerScraping(event)" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="scrapingCity" class="block text-sm font-medium text-slate-700 mb-1">Ville cible</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                       <i class="fas fa-map-marker-alt"></i>
+                                    </div>
+                                    <input type="text" id="scrapingCity" required list="citiesList" placeholder="Ex: Casablanca" class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all placeholder:text-slate-300">
+                                </div>
+                                <datalist id="citiesList">
+                                    <option value="Casablanca">
+                                    <option value="Marrakech">
+                                    <option value="Rabat">
+                                    <option value="Fès">
+                                    <option value="Tanger">
+                                    <option value="Agadir">
+                                </datalist>
                             </div>
-                            <datalist id="citiesList">
-                                <option value="Casablanca">
-                                <option value="Marrakech">
-                                <option value="Rabat">
-                                <option value="Fès">
-                                <option value="Tanger">
-                                <option value="Agadir">
-                            </datalist>
+                            
+                            <div>
+                                <label for="scrapingKeyword" class="block text-sm font-medium text-slate-700 mb-1">Mots-clés</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                       <i class="fas fa-search"></i>
+                                    </div>
+                                    <input type="text" id="scrapingKeyword" value="coworking space" required placeholder="Ex: coworking, bureaux" class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all placeholder:text-slate-300">
+                                </div>
+                            </div>
                         </div>
                         
-                        <div class="form-group">
-                            <label for="scrapingKeyword">Mots-clés</label>
-                            <div class="input-with-icon">
-                                <i class="fas fa-search"></i>
-                                <input type="text" id="scrapingKeyword" value="coworking space" required placeholder="Ex: coworking, bureaux">
+                        <div>
+                             <div class="flex justify-between items-center mb-2">
+                                <label for="maxResults" class="block text-sm font-medium text-slate-700">Quantité</label>
+                                <span id="resultsValue" class="text-sm font-semibold text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full">20 résultats</span>
                             </div>
+                            <input type="range" id="maxResults" min="10" max="100" value="20" step="10" class="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary-600">
                         </div>
-                    </div>
-                    
-                    <div class="form-group" style="margin-top: 20px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <label for="maxResults">Nombre de résultats</label>
-                            <span id="resultsValue" style="font-weight: 600; color: var(--primary-color);">20 résultats</span>
+                        
+                        <div class="flex justify-end pt-4">
+                            <button type="submit" class="px-8 py-3.5 bg-primary-600 text-white rounded-xl font-semibold shadow-lg shadow-primary-500/30 hover:bg-primary-700 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
+                                <i class="fas fa-rocket"></i> Lancer le scraping
+                            </button>
                         </div>
-                        <input type="range" id="maxResults" min="10" max="100" value="20" step="10">
-                    </div>
-                    
-                    <div class="form-actions" style="margin-top: 30px; display: flex; justify-content: flex-end;">
-                        <button type="submit" class="btn btn-primary btn-large">
-                            <i class="fas fa-rocket"></i> Lancer le scraping
-                        </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
+
+                <!-- Container for results -->
+                <div id="scrapedPlacesResultsContainer"></div>
             </div>
 
-             <div class="profile-card" style="padding: 24px;">
-                <h3 style="font-size: 1.25rem; margin-bottom: 16px;"><i class="fas fa-history"></i> Historique des recherches</h3>
-                <div id="scrapingHistory">
-                     <!-- L'historique sera chargé ici -->
-                    <div class="loading-spinner" style="text-align: center; color: var(--gray-color);">
-                        <i class="fas fa-spinner fa-spin"></i> Chargement...
+             <!-- Sidebar / History -->
+            <div class="lg:col-span-1">
+                 <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 sticky top-28">
+                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
+                        <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+                            <i class="fas fa-history text-sm"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800">Historique</h3>
+                    </div>
+                    
+                    <div id="scrapingHistory" class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                         <!-- Loaded via JS -->
+                        <div class="text-center py-8 text-slate-400">
+                            <i class="fas fa-spinner fa-spin mb-2"></i>
+                            <p class="text-sm">Chargement...</p>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Container for results -->
-            <div id="scrapedPlacesResultsContainer"></div>
         </div>
     </main>
+    
+    <footer class="bg-white border-t border-gray-200 pt-8 pb-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+             <p class="text-slate-400 text-sm">
+                &copy; 2025 Coworking Manager. Tous droits réservés.
+            </p>
+        </div>
+    </footer>
+
 
     <script src="../js/notifications.js"></script>
     <script src="../js/api.js"></script>
@@ -116,6 +179,15 @@
 
         // Vérifier l'authentification
         document.addEventListener('DOMContentLoaded', function() {
+            // Mobile Menu
+            const menuToggle = document.getElementById('menuToggle');
+            const navLinks = document.getElementById('navLinks');
+            if(menuToggle && navLinks) {
+                menuToggle.addEventListener('click', () => {
+                    navLinks.classList.toggle('hidden');
+                });
+            }
+
             if (!AuthManager.requireAuth()) return;
             AuthManager.checkAuth();
             loadScrapingHistory();
@@ -143,11 +215,15 @@
              const submitBtn = document.querySelector('#scrapingForm button[type="submit"]');
              const originalBtnText = submitBtn.innerHTML;
              submitBtn.disabled = true;
-             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scraping en cours...';
+             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scraping...';
+             submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
 
              // Clear previous results
              const resultsContainer = document.getElementById('scrapedPlacesResultsContainer');
-             if(resultsContainer) resultsContainer.innerHTML = '';
+             if(resultsContainer) {
+                 resultsContainer.innerHTML = '';
+                 // Optional: Scroll to it
+             }
             
             try {
                 const response = await CoworkingApi.triggerScraping({
@@ -157,7 +233,7 @@
                 });
                 
                 if (response.success) {
-                    AuthManager.showMessage(response.message || 'Scraping terminé avec succès !', 'success');
+                    AppNotification.success(response.message || 'Scraping terminé avec succès !');
                     
                     // Display results if available
                     if (response.data.places && response.data.places.length > 0) {
@@ -175,10 +251,11 @@
                 }
             } catch (error) {
                 console.error('Scraping error:', error);
-                AuthManager.showMessage(error.message || 'Erreur lors du scraping', 'error');
+                AppNotification.error(error.message || 'Erreur lors du scraping');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnText;
+                submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
             }
         }
 
@@ -186,10 +263,12 @@
         function displayNoResults() {
             const container = document.getElementById('scrapedPlacesResultsContainer');
             container.innerHTML = `
-                <div class="profile-card" style="margin-top: 2rem; text-align: center; padding: 40px;">
-                    <i class="fas fa-search" style="font-size: 3rem; color: var(--light-gray); margin-bottom: 20px;"></i>
-                    <h3>Aucun résultat trouvé</h3>
-                    <p>Essayez de modifier votre ville ou vos mots-clés.</p>
+                <div class="bg-white rounded-2xl p-10 text-center border dashed border-slate-300 mt-8">
+                    <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 text-2xl mx-auto mb-4">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800">Aucun résultat trouvé</h3>
+                    <p class="text-slate-500 mt-2">Essayez de modifier votre ville ou vos mots-clés.</p>
                 </div>
             `;
             container.scrollIntoView({ behavior: 'smooth' });
@@ -200,13 +279,17 @@
             const container = document.getElementById('scrapedPlacesResultsContainer');
             
             let html = `
-                <div style="margin-top: 3rem;">
-                    <div class="section-headers" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                        <h2 style="font-size: 1.75rem;"><i class="fas fa-check-circle text-success"></i> Résultats (${places.length})</h2>
-                        <span class="badge badge-success">Nouveaux</span>
+                <div class="mt-12 animate-fade-in">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                             <span class="w-1 h-8 bg-green-500 rounded-full inline-block"></span>
+                             Résultats trouvés 
+                             <span class="text-sm font-normal text-slate-500 ml-2">(${places.length})</span>
+                        </h2>
+                        <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full uppercase tracking-wide">Nouveaux</span>
                     </div>
                 
-                    <div class="places-grid">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             `;
 
             places.forEach(place => {
@@ -215,53 +298,50 @@
                 // Fallback image logic
                 let imageHtml = '';
                 if (data.image) {
-                    imageHtml = `<img src="${data.image}" alt="${data.title || 'Lieu'}" class="place-image" onerror="this.parentElement.innerHTML='<div class=\'place-placeholder\'><i class=\'fas fa-building\'></i></div>'">`;
+                    imageHtml = `<img src="${data.image}" alt="${data.title || 'Lieu'}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-slate-100 flex items-center justify-center text-slate-300\'><i class=\'fas fa-building text-3xl\'></i></div>'">`;
                 } else {
-                    imageHtml = `<div class="place-placeholder"><i class="fas fa-building"></i></div>`;
+                    imageHtml = `<div class="w-full h-full bg-slate-100 flex items-center justify-center text-slate-300"><i class="fas fa-building text-3xl"></i></div>`;
                 }
 
                 html += `
-                    <div class="place-card">
-                        <div class="place-image-wrapper">
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden group hover:shadow-xl hover:border-primary-100 transition-all duration-300">
+                        <div class="h-48 relative overflow-hidden">
                             ${imageHtml}
-                        </div>
-                        <div class="place-content">
-                            <div class="place-header">
-                                <h3 class="place-title">${data.title || data.business_name || 'Sans nom'}</h3>
-                                ${data.rating ? `
-                                <div class="place-rating">
-                                    <i class="fas fa-star" style="margin-right: 4px;"></i> ${data.rating}
-                                </div>` : ''}
+                            <div class="absolute top-3 right-3 px-2 py-1 bg-white/90 backdrop-blur rounded-lg text-xs font-bold shadow-sm">
+                                <i class="fas fa-star text-yellow-500 mr-1"></i> ${data.rating || 'N/A'}
                             </div>
+                        </div>
+                        
+                        <div class="p-5">
+                            <h3 class="text-lg font-bold text-slate-900 mb-1 line-clamp-1 group-hover:text-primary-600 transition-colors">${data.title || data.business_name || 'Sans nom'}</h3>
+                             ${data.type || data.category ? `
+                                <span class="inline-block text-xs font-medium text-primary-600 bg-primary-50 px-2 py-1 rounded-md mb-3">${data.type || data.category}</span>
+                            ` : `<span class="inline-block h-6 mb-3"></span>`}
                             
-                            <div class="place-meta">
-                                <div class="place-meta-item">
-                                    <i class="fas fa-map-marker-alt"></i> 
+                            <div class="space-y-2 text-sm text-slate-500 mb-4">
+                                <div class="flex items-start gap-2 line-clamp-2 min-h-[40px]">
+                                    <i class="fas fa-map-marker-alt mt-1 text-slate-400"></i> 
                                     <span>${data.address || 'Adresse non disponible'}</span>
                                 </div>
                                 ${data.phone && data.phone !== "N/A" ? `
-                                <div class="place-meta-item">
-                                    <i class="fas fa-phone"></i> 
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-phone text-slate-400"></i> 
                                     <span>${data.phone}</span>
-                                </div>` : ''}
-                                
-                                ${data.type || data.category ? `
-                                <span class="place-tag">${data.type || data.category}</span>
-                                ` : ''}
+                                </div>` : '<div class="h-5"></div>'}
                             </div>
                             
-                            <div class="place-footer">
+                            <div class="flex gap-2 pt-4 border-t border-slate-50 mt-2">
                                 ${data.google_maps_link || data.place_id ? 
-                                    `<a href="${data.google_maps_link || 'https://www.google.com/maps/place/?q=place_id:' + data.place_id}" target="_blank" class="btn-place outline">
-                                        <i class="fas fa-map-marked-alt"></i> Maps
-                                    </a>` : '<button disabled class="btn-place outline" style="opacity:0.5;">No Maps</button>'
+                                    `<a href="${data.google_maps_link || 'https://www.google.com/maps/place/?q=place_id:' + data.place_id}" target="_blank" class="flex-1 py-2 rounded-lg border border-slate-200 text-slate-600 text-center text-sm font-medium hover:bg-gray-50 hover:text-primary-600 transition-colors">
+                                        <i class="fas fa-map-marked-alt mr-1"></i> Maps
+                                    </a>` : '<button disabled class="flex-1 py-2 rounded-lg border border-slate-100 text-slate-300 text-center text-sm font-medium cursor-not-allowed">Maps</button>'
                                 }
                                 ${data.website && data.website !== "N/A" ? 
-                                    `<a href="${data.website}" target="_blank" class="btn-place website">
-                                        <i class="fas fa-globe"></i> Site Web
+                                    `<a href="${data.website}" target="_blank" class="flex-1 py-2 rounded-lg bg-primary-50 text-primary-600 text-center text-sm font-medium hover:bg-primary-100 transition-colors">
+                                        <i class="fas fa-globe mr-1"></i> Site Web
                                     </a>` : 
-                                    `<button disabled class="btn-place outline" style="opacity: 0.5; cursor: not-allowed;">
-                                        <i class="fas fa-globe"></i> Site Web
+                                    `<button disabled class="flex-1 py-2 rounded-lg bg-slate-50 text-slate-300 text-center text-sm font-medium cursor-not-allowed">
+                                        <i class="fas fa-globe mr-1"></i> Site Web
                                     </button>`
                                 }
                             </div>
@@ -293,7 +373,7 @@
                 }
             } catch (error) {
                 console.error('History load error:', error);
-                document.getElementById('scrapingHistory').innerHTML = '<p class="text-error">Erreur de chargement</p>';
+                document.getElementById('scrapingHistory').innerHTML = '<p class="text-red-500 text-sm text-center">Erreur de chargement</p>';
             }
         }
         
@@ -304,32 +384,36 @@
             
             if (!scrapings || scrapings.length === 0) {
                 container.innerHTML = `
-                    <div class="no-history" style="text-align: center; color: var(--gray-color); padding: 20px;">
-                        <i class="fas fa-clock" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-                        <p>Aucune recherche récente.</p>
+                    <div class="text-center py-8 text-slate-400">
+                        <i class="far fa-clock text-2xl mb-2"></i>
+                        <p class="text-sm">Aucun historique récent</p>
                     </div>
                 `;
                 return;
             }
             
             container.innerHTML = scrapings.map(scraping => `
-                <div class="history-item">
-                    <div class="history-header">
-                        <span class="history-city"><i class="fas fa-map-pin text-primary"></i> ${scraping.city}</span>
-                        <span class="history-status status-${scraping.status}">${scraping.status}</span>
-                    </div>
-                    <div class="history-body">
-                        <p><i class="fas fa-search fa-sm text-gray"></i> ${scraping.keyword}</p>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-                             <span style="font-size: 0.8rem; color: var(--gray-color);">
-                                <i class="far fa-calendar-alt"></i> ${new Date(scraping.created_at).toLocaleDateString('fr-FR')}
-                             </span>
-                             ${scraping.sheet_url ? `
-                                <a href="${scraping.sheet_url}" target="_blank" style="font-size: 0.85rem; color: var(--primary-color); font-weight: 600;">
-                                    Ouvrir Sheet <i class="fas fa-external-link-alt"></i>
-                                </a>
-                            ` : ''}
+                <div class="p-4 rounded-xl border border-slate-100 hover:border-primary-100 hover:shadow-md transition-all bg-white group">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="font-medium text-slate-800 flex items-center gap-2">
+                            <i class="fas fa-map-pin text-primary-500"></i> ${scraping.city}
                         </div>
+                        <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${scraping.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">
+                            ${scraping.status === 'completed' ? 'Terminé' : 'En cours'}
+                        </span>
+                    </div>
+                    <div class="text-sm text-slate-500 mb-3">
+                        "${scraping.keyword}"
+                    </div>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-slate-400">
+                           ${new Date(scraping.created_at).toLocaleDateString('fr-FR')}
+                        </span>
+                        ${scraping.sheet_url ? `
+                            <a href="${scraping.sheet_url}" target="_blank" class="text-primary-600 hover:underline font-medium hover:text-primary-700 flex items-center gap-1">
+                                <i class="fas fa-table"></i> GSheet
+                            </a>
+                        ` : ''}
                     </div>
                 </div>
             `).join('');
