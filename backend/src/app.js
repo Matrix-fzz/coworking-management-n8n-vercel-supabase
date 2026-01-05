@@ -1,11 +1,15 @@
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
-const path = require('path');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session);
 
 // Charger les variables d'environnement
 dotenv.config();
 dotenv.config({ path: path.join(__dirname, '../.env.local'), override: true });
+
+// Importer la connexion à la base de données
+const pool = require('./utils/database');
 
 // Importer les routes
 const authRoutes = require('./routes/auth.routes');
@@ -14,29 +18,47 @@ const favoriteRoutes = require('./routes/favorite.routes');
 const uploadRoutes = require('./routes/upload.routes');
 const agentRoutes = require('./routes/agent.routes');
 
-// Importer la connexion à la base de données
-require('./utils/database');
-
 // Initialiser l'application
 const app = express();
 
-// Middleware CORS
+// Middleware pour parser les cookies
+app.use(cookieParser());
+
 // Middleware CORS
 const corsOptions = {
-    origin: '*', // Allow all origins
+    origin: ['http://localhost:5500', 'http://127.0.0.1:5500', 'https://coworking-management-tawny.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: false, // Bearer token does not require credentials/cookies
+    credentials: true, // Allow cookies
     optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
 
+// Middleware Session
+app.use(session({
+    store: new pgSession({
+        pool: pool,
+        tableName: 'session',
+        createTableIfMissing: true
+    }),
+    secret: process.env.SESSION_SECRET || 'coworking-secret-key-change-me',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 jours
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        httpOnly: true
+    }
+}));
+
 // Handle OPTIONS preflight requests (Express 5 compatible)
 app.use((req, res, next) => {
     if (req.method === 'OPTIONS') {
-        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
         res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,PATCH,OPTIONS');
         res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.header('Access-Control-Allow-Credentials', 'true');
         return res.status(200).json({});
     }
     next();
@@ -58,7 +80,6 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // Routes API
 app.use('/api/auth', authRoutes);
 app.use('/api/workspaces', workspaceRoutes);
-app.use('/api/favorites', favoriteRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/scraping', require('./routes/scraping.routes'));

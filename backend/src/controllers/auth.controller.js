@@ -23,8 +23,12 @@ class AuthController {
             // Créer l'utilisateur
             const user = await User.create({ username, email, password });
             
-            // Générer le token JWT
-            const token = generateToken(user.id, user.email);
+            // Stocker l'utilisateur dans la session
+            req.session.user = {
+                id: user.id,
+                username: user.username,
+                email: user.email
+            };
 
             // Ne pas renvoyer le hash du mot de passe
             delete user.password_hash;
@@ -32,7 +36,6 @@ class AuthController {
             res.status(201).json(
                 ApiResponse.success(
                     {
-                        token,
                         user: {
                             id: user.id,
                             username: user.username,
@@ -72,13 +75,16 @@ class AuthController {
                 );
             }
 
-            // Générer le token JWT
-            const token = generateToken(user.id, user.email);
+            // Stocker l'utilisateur dans la session
+            req.session.user = {
+                id: user.id,
+                username: user.username,
+                email: user.email
+            };
 
             res.json(
                 ApiResponse.success(
                     {
-                        token,
                         user: {
                             id: user.id,
                             username: user.username,
@@ -95,6 +101,17 @@ class AuthController {
                 ApiResponse.error(error.message || 'Login failed')
             );
         }
+    }
+
+    // Déconnexion
+    static async logout(req, res) {
+        req.session.destroy((err) => {
+            if (err) {
+                return res.status(500).json(ApiResponse.error('Logout failed'));
+            }
+            res.clearCookie('connect.sid'); // Nom par défaut du cookie express-session
+            res.json(ApiResponse.success(null, 'Logged out successfully'));
+        });
     }
 
     // Récupérer le profil de l'utilisateur connecté
@@ -135,6 +152,15 @@ class AuthController {
                 return res.status(400).json(
                     ApiResponse.error('Failed to update profile')
                 );
+            }
+
+            // Mettre à jour la session si nécessaire
+            if (updateData.username || updateData.email) {
+                req.session.user = {
+                    ...req.session.user,
+                    ...(updateData.username && { username: updateData.username }),
+                    ...(updateData.email && { email: updateData.email })
+                };
             }
 
             // Récupérer les nouvelles données de l'utilisateur

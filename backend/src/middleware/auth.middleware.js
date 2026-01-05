@@ -2,31 +2,29 @@ const { verifyToken } = require('../utils/jwt');
 
 const authMiddleware = (req, res, next) => {
     try {
-        // Récupérer le token depuis le header
+        // 1. Vérifier la session (Priorité)
+        if (req.session && req.session.user) {
+            req.user = req.session.user;
+            return next();
+        }
+
+        // 2. Vérifier le token (Fallback)
         const authHeader = req.headers.authorization;
         
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({
-                success: false,
-                message: 'No token provided'
-            });
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            const token = authHeader.split(' ')[1];
+            const decoded = verifyToken(token);
+            
+            if (decoded) {
+                req.user = decoded;
+                return next();
+            }
         }
         
-        const token = authHeader.split(' ')[1];
-        
-        // Vérifier le token
-        const decoded = verifyToken(token);
-        
-        if (!decoded) {
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid or expired token'
-            });
-        }
-        
-        // Ajouter les données de l'utilisateur à la requête
-        req.user = decoded;
-        next();
+        return res.status(401).json({
+            success: false,
+            message: 'Authentication required. Please log in.'
+        });
     } catch (error) {
         console.error('Auth middleware error:', error);
         return res.status(500).json({
@@ -38,6 +36,13 @@ const authMiddleware = (req, res, next) => {
 
 const optionalAuthMiddleware = (req, res, next) => {
     try {
+        // 1. Check session
+        if (req.session && req.session.user) {
+            req.user = req.session.user;
+            return next();
+        }
+
+        // 2. Check token
         const authHeader = req.headers.authorization;
         
         if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -50,7 +55,6 @@ const optionalAuthMiddleware = (req, res, next) => {
         }
         next();
     } catch (error) {
-        // En cas d'erreur (token invalide, expiré, etc.), on continue sans utilisateur connecté
         next();
     }
 };

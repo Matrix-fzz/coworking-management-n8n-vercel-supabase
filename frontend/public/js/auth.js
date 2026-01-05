@@ -1,23 +1,23 @@
 // Gestion de l'authentification
 class AuthManager {
   // Vérifier l'état d'authentification
-  static checkAuth() {
-    const token = localStorage.getItem("token");
+  static async checkAuth() {
     const user = localStorage.getItem("user");
 
-    if (token && user) {
-      try {
-        const userData = JSON.parse(user);
+    // On vérifie toujours auprès du serveur (qui vérifiera le cookie de session)
+    try {
+      const response = await CoworkingApi.getProfile();
+      if (response.success) {
+        const userData = response.data.user;
+        localStorage.setItem("user", JSON.stringify(userData));
         this.updateUI(true, userData);
         return true;
-      } catch (error) {
-        console.error("Error parsing user data:", error);
-        this.logout();
-        return false;
       }
+    } catch (error) {
+      console.warn("Session expired or invalid:", error.message);
     }
 
-    this.updateUI(false);
+    this.logout(false); // Logout without notification/redirect if silent check fails
     return false;
   }
 
@@ -151,10 +151,12 @@ class AuthManager {
 
       if (response.success) {
         console.log("🎉 Connexion réussie !");
-        console.log("Token reçu:", response.data.token ? "Oui" : "Non");
-        console.log("User data:", response.data.user);
-
-        localStorage.setItem("token", response.data.token);
+        
+        // On n'a plus forcément besoin du token côté client avec les cookies,
+        // mais on peut le garder pour compatibilité si nécessaire.
+        if (response.data.token) {
+            localStorage.setItem("token", response.data.token);
+        }
         localStorage.setItem("user", JSON.stringify(response.data.user));
 
         AppNotification.success("Connexion réussie !");
@@ -181,19 +183,28 @@ class AuthManager {
     }
   }
   // Déconnexion
-  static logout() {
+  static async logout(notify = true) {
+    try {
+        // Appeler l'API de déconnexion pour détruire la session sur le serveur
+        await ApiService.post('/auth/logout', {});
+    } catch (err) {
+        console.log("Logout API call failed, proceeding with local logout");
+    }
+
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     this.updateUI(false);
 
-    // Notification de succès
-    AppNotification.success("Vous avez été déconnecté avec succès");
+    if (notify) {
+        // Notification de succès
+        AppNotification.success("Vous avez été déconnecté avec succès");
 
-    setTimeout(() => {
-      // Redirection dynamique selon la page actuelle
-      const isPagesDir = window.location.pathname.includes('/pages/');
-      window.location.href = isPagesDir ? "../index.html" : "index.html";
-    }, 1000);
+        setTimeout(() => {
+            // Redirection dynamique selon la page actuelle
+            const isPagesDir = window.location.pathname.includes('/pages/');
+            window.location.href = isPagesDir ? "../index.html" : "index.html";
+        }, 1000);
+    }
   }
 
   // Validation des données d'inscription
@@ -291,28 +302,8 @@ class AuthManager {
 
   // Vérifier si l'utilisateur est authentifié
   static isAuthenticated() {
-    const token = localStorage.getItem("token");
     const user = localStorage.getItem("user");
-
-    if (!token || !user) {
-      return false;
-    }
-
-    try {
-      // Vérifier si le token est expiré (simplifié)
-      const tokenData = JSON.parse(atob(token.split(".")[1]));
-      const now = Math.floor(Date.now() / 1000);
-
-      if (tokenData.exp && tokenData.exp < now) {
-        this.logout();
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error("Token validation error:", error);
-      return false;
-    }
+    return user !== null;
   }
 
   // Récupérer l'utilisateur courant

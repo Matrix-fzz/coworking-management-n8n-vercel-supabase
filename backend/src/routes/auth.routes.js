@@ -11,5 +11,6 @@ router.post('/login', validateLogin, AuthController.login);
 // Protected routes
 router.get('/me', authMiddleware, AuthController.getProfile);
 router.put('/me', authMiddleware, AuthController.updateProfile);
+router.post('/logout', authMiddleware, AuthController.logout);
 
 module.exports = router;

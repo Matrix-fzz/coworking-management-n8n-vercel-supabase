@@ -62,7 +62,8 @@ class ApiService {
     static async get(endpoint) {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: 'GET',
-            headers: this.getHeaders()
+            headers: this.getHeaders(),
+            credentials: 'include'
         });
         return this.handleResponse(response);
     }
@@ -72,7 +73,8 @@ class ApiService {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: 'POST',
             headers: this.getHeaders(),
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
+            credentials: 'include'
         });
         return this.handleResponse(response);
     }
@@ -82,7 +84,8 @@ class ApiService {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: 'PUT',
             headers: this.getHeaders(),
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
+            credentials: 'include'
         });
         return this.handleResponse(response);
     }
@@ -91,7 +94,8 @@ class ApiService {
     static async delete(endpoint) {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: 'DELETE',
-            headers: this.getHeaders()
+            headers: this.getHeaders(),
+            credentials: 'include'
         });
         return this.handleResponse(response);
     }
@@ -107,7 +111,8 @@ class ApiService {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: 'POST',
             headers: headers,
-            body: formData
+            body: formData,
+            credentials: 'include'
         });
         return this.handleResponse(response);
     }

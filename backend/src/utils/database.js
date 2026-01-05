@@ -91,6 +91,15 @@ const checkTables = async () => {
                 completed_at TIMESTAMP NULL
             );
 
+            CREATE TABLE IF NOT EXISTS session (
+              sid varchar NOT NULL COLLATE "default",
+              sess json NOT NULL,
+              expire timestamp(6) NOT NULL,
+              CONSTRAINT session_pkey PRIMARY KEY (sid)
+            ) WITH (OIDS=FALSE);
+
+            CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire");
+
             -- Indexes
             CREATE INDEX IF NOT EXISTS idx_workspaces_city ON workspaces(city);
             CREATE INDEX IF NOT EXISTS idx_workspaces_status ON workspaces(status);
