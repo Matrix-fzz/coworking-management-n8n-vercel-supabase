@@ -41,29 +41,62 @@ class AuthManager {
 
   // Mettre à jour l'interface utilisateur
   static updateUI(isAuthenticated, userData = null) {
+    // Desktop elements
     const authSection = document.getElementById("authSection");
     const userSection = document.getElementById("userSection");
     const usernameDisplay = document.getElementById("usernameDisplay");
-    const addWorkspaceBtn = document.getElementById("addWorkspaceBtn");
+    const addWorkspaceBtn = document.getElementById("addWorkspaceBtn"); // Only on index
+
+    // Mobile elements
+    const authSectionMobile = document.getElementById("authSectionMobile");
+    const userSectionMobile = document.getElementById("userSectionMobile");
+    const usernameDisplayMobile = document.getElementById("usernameDisplayMobile");
 
     if (isAuthenticated && userData) {
+      // Desktop: Show User, Hide Auth
       if (authSection) authSection.style.display = "none";
-      if (userSection) userSection.style.display = "flex";
-      if (usernameDisplay) {
-        usernameDisplay.textContent = userData.username;
+      if (userSection) {
+          userSection.style.display = "flex";
+          userSection.classList.remove("hidden"); // Ensure Tailwind hidden class is removed
       }
-      if (addWorkspaceBtn) {
-        addWorkspaceBtn.style.display = "block";
+      if (usernameDisplay) usernameDisplay.textContent = userData.username;
+      
+      // Mobile: Show User, Hide Auth
+      if (authSectionMobile) authSectionMobile.style.display = "none";
+      if (userSectionMobile) {
+          userSectionMobile.style.display = "block";
+          userSectionMobile.classList.remove("hidden");
       }
+      if (usernameDisplayMobile) usernameDisplayMobile.textContent = userData.username;
+
+      // Add Workspace Button (Index only)
+      if (addWorkspaceBtn) addWorkspaceBtn.style.display = "block";
+
     } else {
-      if (authSection) authSection.style.display = "flex";
-      if (userSection) userSection.style.display = "none";
-      if (usernameDisplay) {
-        usernameDisplay.textContent = "";
+      // Desktop: Show Auth, Hide User
+      if (authSection) {
+          authSection.style.display = "flex";
+          authSection.classList.remove("hidden");
       }
-      if (addWorkspaceBtn) {
-        addWorkspaceBtn.style.display = "none";
+      if (userSection) {
+          userSection.style.display = "none";
+          userSection.classList.add("hidden");
       }
+      if (usernameDisplay) usernameDisplay.textContent = "";
+
+      // Mobile: Show Auth, Hide User
+      if (authSectionMobile) {
+          authSectionMobile.style.display = "block"; // Usually div/block
+          authSectionMobile.classList.remove("hidden");
+      }
+      if (userSectionMobile) {
+          userSectionMobile.style.display = "none";
+          userSectionMobile.classList.add("hidden");
+      }
+      if (usernameDisplayMobile) usernameDisplayMobile.textContent = "";
+
+      // Add Workspace Button
+      if (addWorkspaceBtn) addWorkspaceBtn.style.display = "none";
     }
   }
 
