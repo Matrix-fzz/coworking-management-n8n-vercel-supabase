@@ -7,7 +7,7 @@ async function diagnosticV3() {
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: 'Hello from diagnostic script', history: [] })
+            body: JSON.stringify({ userMessage: 'Hello from diagnostic script', history: [] })
         });
         
         console.log(`Status: ${response.status} ${response.statusText}`);

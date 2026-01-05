@@ -1,5 +1,4 @@
 {
-  "name": "AI Agent - Final V3",
   "nodes": [
     {
       "parameters": {
@@ -8,41 +7,42 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "webhook-v3",
+      "id": "302a636e-3575-493e-a6a0-dc46963b2adf",
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1.1,
-      "position": [250, 300]
+      "position": [
+        5120,
+        2272
+      ],
+      "webhookId": "e8068c33-a5a7-4b42-a55b-ad680b4caa3e"
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "msg",
-              "name": "userMessage",
-              "value": "={{ $json.body.message || $json.message || 'Hello' }}",
-              "type": "string"
-            }
-          ]
-        }
+        "options": {}
       },
-      "id": "set-input",
+      "id": "347e9450-6d1b-4eea-9b06-b1daab5d6ea2",
       "name": "Set Input",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.2,
-      "position": [450, 300]
+      "position": [
+        5328,
+        2272
+      ]
     },
     {
       "parameters": {
         "promptType": "define",
         "text": "=Question utilisateur: {{ $json.userMessage }}\n\nRépondez en tant qu'assistant pour un espace de coworking."
       },
-      "id": "llm-chain",
+      "id": "f5e2f849-0a23-45d2-8132-9cd37a1e0413",
       "name": "AI Chat",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.4,
-      "position": [650, 300]
+      "position": [
+        5472,
+        2336
+      ]
     },
     {
       "parameters": {
@@ -50,11 +50,14 @@
           "baseURL": "https://openrouter.ai/api/v1"
         }
       },
-      "id": "model",
+      "id": "fdc9470e-79bc-49ec-aad8-a3496088dace",
       "name": "Gemma Model",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1,
-      "position": [650, 500],
+      "position": [
+        5520,
+        2480
+      ],
       "credentials": {
         "openAiApi": {
           "id": "onz6E2iEiZGwDclj",
@@ -65,13 +68,17 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={\n  \"output\": \"{{ $json.output }}\",\n  \"response\": \"{{ $json.output }}\",\n  \"success\": true\n}"
+        "responseBody": "={\n  \"output\": \"{{ $json.output }}\",\n  \"response\": \"{{ $json.output }}\",\n  \"success\": true\n}",
+        "options": {}
       },
-      "id": "respond-node",
+      "id": "0be10c53-0188-4cb0-98d1-668b2a390662",
       "name": "Respond to Webhook",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [850, 300]
+      "position": [
+        5728,
+        2272
+      ]
     }
   ],
   "connections": {
@@ -119,5 +126,10 @@
         ]
       ]
     }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6fba02c56f732391825a81b0d3eb33212632413b406e8a0f3fe5b1cfa7369a99"
   }
 }

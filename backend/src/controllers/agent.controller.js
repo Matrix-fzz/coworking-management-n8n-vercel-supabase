@@ -15,8 +15,10 @@ class AgentController {
 
       console.log(`DEBUG - n8nAgentWebhookUrl found: [${n8nAgentWebhookUrl}]`);
       if (n8nAgentWebhookUrl) {
-          console.log(`DEBUG - URL Length: ${n8nAgentWebhookUrl.length}`);
-          console.log(`DEBUG - URL Prefix: ${n8nAgentWebhookUrl.substring(0, 10)}`);
+        console.log(`DEBUG - URL Length: ${n8nAgentWebhookUrl.length}`);
+        console.log(
+          `DEBUG - URL Prefix: ${n8nAgentWebhookUrl.substring(0, 10)}`
+        );
       }
 
       if (!n8nAgentWebhookUrl) {
@@ -27,7 +29,7 @@ class AgentController {
       }
 
       const payload = {
-        message,
+        userMessage: message,
         history: history || [],
         userId,
         timestamp: new Date().toISOString(),
@@ -50,7 +52,11 @@ class AgentController {
         console.error(`DEBUG - n8n agent error content: ${errorText}`);
         return res
           .status(response.status)
-          .json(ApiResponse.error(`L'IA (n8n) a répondu avec une erreur : ${response.status}`));
+          .json(
+            ApiResponse.error(
+              `L'IA (n8n) a répondu avec une erreur : ${response.status}`
+            )
+          );
       }
 
       const result = await response.json();
@@ -58,12 +64,16 @@ class AgentController {
 
       // Check if n8n is in test mode (returns "Workflow was started")
       if (result.message === "Workflow was started") {
-        console.error("DEBUG - n8n workflow is in test mode, not returning actual response");
-        return res.status(503).json(
-          ApiResponse.error(
-            "Le workflow n8n est en mode test. Veuillez configurer le webhook pour 'Respond to Webhook' au lieu de 'Wait for webhook call'."
-          )
+        console.error(
+          "DEBUG - n8n workflow is in test mode, not returning actual response"
         );
+        return res
+          .status(503)
+          .json(
+            ApiResponse.error(
+              "Le workflow n8n est en mode test. Veuillez configurer le webhook pour 'Respond to Webhook' au lieu de 'Wait for webhook call'."
+            )
+          );
       }
 
       // Parse n8n response - try different formats
@@ -72,16 +82,26 @@ class AgentController {
         result.response ||
         result.text ||
         (Array.isArray(result)
-          ? result[0]?.output || result[0]?.response || result[0]?.message || JSON.stringify(result[0])
-          : typeof result === 'string' ? result : null);
+          ? result[0]?.output ||
+            result[0]?.response ||
+            result[0]?.message ||
+            JSON.stringify(result[0])
+          : typeof result === "string"
+          ? result
+          : null);
 
       if (!aiResponse) {
-        console.error("DEBUG - Could not extract AI response from n8n result:", result);
-        return res.status(500).json(
-          ApiResponse.error(
-            "Impossible d'extraire la réponse de l'IA. Format de réponse inattendu."
-          )
+        console.error(
+          "DEBUG - Could not extract AI response from n8n result:",
+          result
         );
+        return res
+          .status(500)
+          .json(
+            ApiResponse.error(
+              "Impossible d'extraire la réponse de l'IA. Format de réponse inattendu."
+            )
+          );
       }
 
       res.json(
@@ -92,7 +112,7 @@ class AgentController {
       console.error("Error Name:", error.name);
       console.error("Error Message:", error.message);
       console.error("Error Stack:", error.stack);
-      
+
       res
         .status(500)
         .json(
