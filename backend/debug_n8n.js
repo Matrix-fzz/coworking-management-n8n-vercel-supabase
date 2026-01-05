@@ -20,7 +20,7 @@ async function debugN8n() {
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: 'test connection', history: [] })
+            body: JSON.stringify({ chatInput: 'test connection', userMessage: 'test connection', history: [] })
         });
 
         console.log('Response Status:', response.status);

@@ -7,13 +7,13 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "302a636e-3575-493e-a6a0-dc46963b2adf",
-      "name": "Webhook",
+      "id": "0239ed0e-7e60-4c97-9a26-e81995361720",
+      "name": "Webhook1",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1.1,
       "position": [
-        5120,
-        2272
+        4640,
+        1888
       ],
       "webhookId": "e8068c33-a5a7-4b42-a55b-ad680b4caa3e"
     },
@@ -21,27 +21,13 @@
       "parameters": {
         "options": {}
       },
-      "id": "347e9450-6d1b-4eea-9b06-b1daab5d6ea2",
-      "name": "Set Input",
+      "id": "119500f5-3af1-4f9e-96cf-c49cb922d9a4",
+      "name": "Set Input1",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.2,
       "position": [
-        5328,
-        2272
-      ]
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=Question utilisateur: {{ $json.userMessage }}\n\nRépondez en tant qu'assistant pour un espace de coworking."
-      },
-      "id": "f5e2f849-0a23-45d2-8132-9cd37a1e0413",
-      "name": "AI Chat",
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.4,
-      "position": [
-        5472,
-        2336
+        4880,
+        1888
       ]
     },
     {
@@ -50,13 +36,13 @@
           "baseURL": "https://openrouter.ai/api/v1"
         }
       },
-      "id": "fdc9470e-79bc-49ec-aad8-a3496088dace",
-      "name": "Gemma Model",
+      "id": "f95522b8-fb92-4662-beb6-40fe00abe869",
+      "name": "Gemma Model1",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1,
       "position": [
-        5520,
-        2480
+        5056,
+        2128
       ],
       "credentials": {
         "openAiApi": {
@@ -68,59 +54,74 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={\n  \"output\": \"{{ $json.output }}\",\n  \"response\": \"{{ $json.output }}\",\n  \"success\": true\n}",
+        "responseBody": "={\n  \"output\": \"{{ $json.output }}\",\n  \"success\": true\n}",
         "options": {}
       },
-      "id": "0be10c53-0188-4cb0-98d1-668b2a390662",
-      "name": "Respond to Webhook",
+      "id": "220bd2ca-89e5-418a-a60e-e1a48da98bc1",
+      "name": "Respond to Webhook1",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        5728,
-        2272
+        5424,
+        1904
       ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Role: You are the AI Operations Assistant for a Coworking Space Management Platform.\n\nContext: You are acting as a specialized assistant embedded in a website for Coworking Space Managers. Your users are professionals managing shared workspaces, offices, and amenities.\n\nTask: Assist the managers with inquiries related to:\n- Space Management (Desks, Private Offices, Meeting Rooms)\n- Member Management & Community Engagement\n- Booking & Scheduling optimizations\n- Operational Best Practices for Coworking Spaces\n\nGuidelines:\n- Maintain a professional, helpful, and concise tone.\n- If the user asks about platform features, assume standard coworking platform capabilities (booking, billing, member directory).\n- Do not answer questions completely unrelated to business or workspace management (e.g., general trivia, coding unrelated to the platform).\n- Always prioritize the perspective of the \"Manager\" seeking to improve their business."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        5072,
+        1824
+      ],
+      "id": "522cc713-2c9c-4a71-b17b-296246deb988",
+      "name": "AI Agent1"
     }
   ],
   "connections": {
-    "Webhook": {
+    "Webhook1": {
       "main": [
         [
           {
-            "node": "Set Input",
+            "node": "Set Input1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Set Input": {
+    "Set Input1": {
       "main": [
         [
           {
-            "node": "AI Chat",
+            "node": "AI Agent1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "AI Chat": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Gemma Model": {
+    "Gemma Model1": {
       "ai_languageModel": [
         [
           {
-            "node": "AI Chat",
+            "node": "AI Agent1",
             "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
             "index": 0
           }
         ]

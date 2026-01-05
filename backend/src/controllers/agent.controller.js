@@ -29,7 +29,8 @@ class AgentController {
       }
 
       const payload = {
-        userMessage: message,
+        chatInput: message, // n8n LangChain Agent node expects chatInput
+        userMessage: message, // keep for backward compatibility
         history: history || [],
         userId,
         timestamp: new Date().toISOString(),
@@ -59,7 +60,34 @@ class AgentController {
           );
       }
 
-      const result = await response.json();
+      const responseText = await response.text();
+      console.log(`DEBUG - n8n raw response: [${responseText}]`);
+
+      if (!responseText || responseText.trim() === "") {
+        console.error("DEBUG - n8n returned an empty response");
+        return res
+          .status(502)
+          .json(
+            ApiResponse.error(
+              "L'IA (n8n) a renvoyé une réponse vide. Vérifiez que le workflow est bien configuré avec un nœud 'Respond to Webhook'."
+            )
+          );
+      }
+
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error(`DEBUG - Failed to parse n8n response as JSON: ${parseError.message}`);
+        return res
+          .status(502)
+          .json(
+            ApiResponse.error(
+              "La réponse de l'IA n'est pas au format JSON valide."
+            )
+          );
+      }
+      
       console.log(`DEBUG - n8n result:`, JSON.stringify(result));
 
       // Check if n8n is in test mode (returns "Workflow was started")
@@ -71,12 +99,13 @@ class AgentController {
           .status(503)
           .json(
             ApiResponse.error(
-              "Le workflow n8n est en mode test. Veuillez configurer le webhook pour 'Respond to Webhook' au lieu de 'Wait for webhook call'."
+              "Le workflow n8n est en mode test. Veuillez activer le workflow en production ou cliquer sur 'Listen for test event' dans n8n."
             )
           );
       }
 
       // Parse n8n response - try different formats
+      // The new workflow responds with { output: "...", success: true }
       const aiResponse =
         result.output ||
         result.response ||
