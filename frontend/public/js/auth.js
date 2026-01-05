@@ -4,6 +4,7 @@ class AuthManager {
   static async checkAuth() {
     console.log("🔍 Checking auth state...");
     const savedUser = localStorage.getItem("user");
+    const savedToken = localStorage.getItem("token");
     
     // Si on a un utilisateur local, on met à jour l'UI immédiatement pour éviter le flash
     if (savedUser) {
@@ -16,7 +17,7 @@ class AuthManager {
       }
     }
 
-    // On vérifie ensuite auprès du serveur (qui vérifiera le cookie de session)
+    // On vérifie ensuite auprès du serveur
     try {
       console.log("📡 Verifying session with server...");
       const response = await CoworkingApi.getProfile();
@@ -29,10 +30,16 @@ class AuthManager {
       }
     } catch (error) {
       console.warn("📡 Session verification failed:", error.message);
-      // Si l'erreur est 401 (Non autorisé), on déconnecte
-      if (error.status === 401) {
-        console.log("🚫 Session expired on server. Logging out.");
+      
+      // Si on a un token local mais que le serveur renvoie 401, 
+      // c'est que le token n'est plus valide ou le cookie a expiré
+      if (error.status === 401 && !savedToken) {
+        console.log("🚫 No session/token. Logging out.");
         this.logout(false);
+      } else if (error.status === 401 && savedToken) {
+          // Si on a un token mais que /me renvoie 401, le token est problement expiré
+          console.log("🚫 Token expired. Logging out.");
+          this.logout(false);
       }
     }
 
@@ -132,7 +139,9 @@ class AuthManager {
 
       if (response.success) {
         // Sauvegarder les données
-        localStorage.setItem("token", response.data.token);
+        if (response.data.token) {
+            localStorage.setItem("token", response.data.token);
+        }
         localStorage.setItem("user", JSON.stringify(response.data.user));
 
         // Notification de succès
@@ -203,15 +212,17 @@ class AuthManager {
       if (response.success) {
         console.log("🎉 Connexion réussie !");
         
-        // On n'a plus forcément besoin du token côté client avec les cookies,
-        // mais on peut le garder pour compatibilité si nécessaire.
+        // On sauvegarde le token et l'utilisateur
         if (response.data.token) {
             localStorage.setItem("token", response.data.token);
+            console.log("💾 Token saved to localStorage");
         }
         localStorage.setItem("user", JSON.stringify(response.data.user));
+        console.log("💾 User data saved to localStorage");
 
         AppNotification.success("Connexion réussie !");
 
+        // S'assurer que l'UI est mise à jour AVANT la redirection
         this.updateUI(true, response.data.user);
 
         setTimeout(() => {

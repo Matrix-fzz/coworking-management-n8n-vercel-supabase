@@ -33,9 +33,13 @@ class AuthController {
             // Ne pas renvoyer le hash du mot de passe
             delete user.password_hash;
 
+            // Générer un token JWT pour le frontend
+            const token = generateToken(user.id, user.email);
+
             res.status(201).json(
                 ApiResponse.success(
                     {
+                        token,
                         user: {
                             id: user.id,
                             username: user.username,
@@ -95,9 +99,14 @@ class AuthController {
                 }
                 
                 console.log('[AUTH] Session saved successfully');
+                
+                // Générer un token JWT pour le frontend (fallback au cookie)
+                const token = generateToken(user.id, user.email);
+
                 res.json(
                     ApiResponse.success(
                         {
+                            token,
                             user: {
                                 id: user.id,
                                 username: user.username,

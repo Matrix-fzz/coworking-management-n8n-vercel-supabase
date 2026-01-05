@@ -26,6 +26,9 @@ const app = express();
 // Middleware pour parser les cookies
 app.use(cookieParser());
 
+// Trust proxy for Vercel/proxies (needed for secure cookies)
+app.set('trust proxy', 1);
+
 // Middleware CORS
 const corsOptions = {
     origin: [
