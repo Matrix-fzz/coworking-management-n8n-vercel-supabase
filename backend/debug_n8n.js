@@ -14,47 +14,25 @@ async function debugN8n() {
         return;
     }
 
-    console.log(`Sending test payload to: ${url}`);
+    console.log('Sending test payload to n8n...');
     
     try {
-        const payload = { 
-            chatInput: 'Hello, how can you help me today?', 
-            userMessage: 'Hello, how can you help me today?', 
-            history: [] 
-        };
-        console.log('Payload:', JSON.stringify(payload));
-
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify({ message: 'test connection', chatInput: 'test connection', history: [] })
         });
 
-        console.log('--- RESPONSE ---');
-        console.log('Status:', response.status);
-        console.log('Status Text:', response.statusText);
-        console.log('Headers:', JSON.stringify(Object.fromEntries(response.headers.entries())));
+        console.log('Response Status:', response.status);
+        console.log('Response Status Text:', response.statusText);
         
         const text = await response.text();
-        console.log('Raw Body Length:', text.length);
-        console.log('Raw Body Content:', text || '(EMPTY BODY)');
-
-        if (text) {
-            try {
-                const json = JSON.parse(text);
-                console.log('Parsed JSON:', JSON.stringify(json, null, 2));
-            } catch (e) {
-                console.log('Body is not valid JSON.');
-            }
-        }
+        console.log('Response Body:', text);
 
         if (response.status === 404) {
-            console.error('\n!!! 404 NOT FOUND !!!');
-            console.error('The webhook URL is likely incorrect or the workflow is not active.');
-        } else if (text.trim() === "" && response.ok) {
-            console.error('\n!!! EMPTY RESPONSE DETECTED !!!');
-            console.error('The workflow returned 200 OK but no body.');
-            console.error('Check your "Respond to Webhook" node in n8n.');
+            console.error('\n!!! 404 DETECTED !!!');
+            console.error('This means n8n received the request but says this URL does not exist.');
+            console.error('Check if the workflow is ACTIVE and using the correct PRODUCTION URL.');
         }
     } catch (error) {
         console.error('Fetch Error:', error.message);

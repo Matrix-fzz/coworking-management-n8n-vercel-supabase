@@ -32,6 +32,7 @@
     },
     {
       "parameters": {
+        "model": "google/gemma-3-27b-it:free",
         "options": {
           "baseURL": "https://openrouter.ai/api/v1"
         }
@@ -46,8 +47,8 @@
       ],
       "credentials": {
         "openAiApi": {
-          "id": "onz6E2iEiZGwDclj",
-          "name": "OpenAi account 2"
+          "id": "GyXmqA7LnpKwiwKo",
+          "name": "OpenAi account 5"
         }
       }
     },
@@ -75,11 +76,103 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3,
       "position": [
-        5072,
-        1824
+        5088,
+        1888
       ],
       "id": "522cc713-2c9c-4a71-b17b-296246deb988",
       "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ai-agent-v3",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "e925ebab-6824-4f08-b4fc-c4796a248eae",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        5104,
+        1504
+      ],
+      "webhookId": "e8068c33-a5a7-4b42-a55b-ad680b4caa3e"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "278e38d7-71bd-4217-a169-c6e75923c621",
+              "name": "chatInput",
+              "value": "={{ $json.body.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fe3054d8-3d6a-4253-ab4a-aee539abdbed",
+      "name": "Set Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5344,
+        1504
+      ]
+    },
+    {
+      "parameters": {
+        "model": "google/gemma-3-27b-it:free",
+        "options": {
+          "baseURL": "https://openrouter.ai/api/v1"
+        }
+      },
+      "id": "6d7ba4ad-423a-44f5-b155-d2c68414aa27",
+      "name": "Gemma Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        5520,
+        1760
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "GyXmqA7LnpKwiwKo",
+          "name": "OpenAi account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{\n{\n  \"output\": $json.output,\n  \"success\": true\n}\n}}",
+        "options": {}
+      },
+      "id": "ae8f5f82-9cbc-4d1b-8085-4c3b0fe87c76",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        5888,
+        1520
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Role: You are the AI Operations Assistant for a Coworking Space Management Platform.\n\nContext: You are acting as a specialized assistant embedded in a website for Coworking Space Managers. Your users are professionals managing shared workspaces, offices, and amenities.\n\nTask: Assist the managers with inquiries related to:\n- Space Management (Desks, Private Offices, Meeting Rooms)\n- Member Management & Community Engagement\n- Booking & Scheduling optimizations\n- Operational Best Practices for Coworking Spaces\n\nGuidelines:\n- Maintain a professional, helpful, and concise tone.\n- If the user asks about platform features, assume standard coworking platform capabilities (booking, billing, member directory).\n- Do not answer questions completely unrelated to business or workspace management (e.g., general trivia, coding unrelated to the platform).\n- Always prioritize the perspective of the \"Manager\" seeking to improve their business."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        5552,
+        1504
+      ],
+      "id": "7407b19b-bd60-4b1f-abac-8643f0465eac",
+      "name": "AI Agent"
     }
   ],
   "connections": {
@@ -121,6 +214,50 @@
         [
           {
             "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Set Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Input": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemma Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
             "type": "main",
             "index": 0
           }

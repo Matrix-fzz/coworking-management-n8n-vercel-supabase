@@ -29,8 +29,8 @@ class AgentController {
       }
 
       const payload = {
-        chatInput: message, // n8n LangChain Agent node expects chatInput
-        userMessage: message, // keep for backward compatibility
+        message: message, // Latest n8n workflow uses $json.body.message
+        chatInput: message, // Keep for compatibility with LangChain nodes
         history: history || [],
         userId,
         timestamp: new Date().toISOString(),
