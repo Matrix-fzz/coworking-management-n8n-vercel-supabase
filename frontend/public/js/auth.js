@@ -35,15 +35,11 @@ class AuthManager {
     } catch (error) {
       console.warn("📡 Session verification failed:", error.message);
       
-      // Si on a un token local mais que le serveur renvoie 401, 
-      // c'est que le token n'est plus valide ou le cookie a expiré
-      if (error.status === 401 && !savedToken) {
-        console.log("🚫 No session/token. Logging out.");
-        this.logout(false);
-      } else if (error.status === 401 && savedToken) {
-          // Si on a un token mais que /me renvoie 401, le token est problement expiré
-          console.log("🚫 Token expired. Logging out.");
-          this.logout(false);
+      // On ne déconnecte plus automatiquement ici pour éviter les déconnexions intempestives
+      // au chargement de la page. On laisse l'utilisateur dans son état local.
+      // La déconnexion sera gérée si une action protégée échoue ou si l'utilisateur clique sur déconnexion.
+      if (error.status === 401) {
+        console.log("⚠️ Session potentially invalid on server, but keeping local session for now.");
       }
     }
 
