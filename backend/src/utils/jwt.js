@@ -3,11 +3,11 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || 'coworking-jwt-secret-key-change-me';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
-if (!JWT_SECRET) {
-    console.warn('⚠️ JWT_SECRET is not defined in environment variables. Auth will fail.');
+if (!process.env.JWT_SECRET) {
+    console.warn('⚠️ JWT_SECRET is not defined in environment variables. Using fallback secret.');
 }
 
 // Générer un token JWT

@@ -17,6 +17,9 @@ class ApiService {
         const token = localStorage.getItem('token');
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
+            console.log('📡 ApiService: Token included in headers');
+        } else {
+            console.warn('📡 ApiService: No token found in localStorage');
         }
         
         return headers;

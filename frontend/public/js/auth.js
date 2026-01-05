@@ -5,6 +5,10 @@ class AuthManager {
     console.log("🔍 Checking auth state...");
     const savedUser = localStorage.getItem("user");
     const savedToken = localStorage.getItem("token");
+    console.log("💎 Current localStorage state:", { 
+        hasUser: !!savedUser, 
+        hasToken: !!savedToken 
+    });
     
     // Si on a un utilisateur local, on met à jour l'UI immédiatement pour éviter le flash
     if (savedUser) {
@@ -365,7 +369,10 @@ class AuthManager {
   // Vérifier si l'utilisateur est authentifié
   static isAuthenticated() {
     const user = localStorage.getItem("user");
-    return user !== null;
+    const token = localStorage.getItem("token");
+    const authenticated = user !== null && token !== null;
+    console.log(`🔑 Session state: User is ${authenticated ? 'authenticated' : 'not authenticated'}.`);
+    return authenticated;
   }
 
   // Récupérer l'utilisateur courant
@@ -373,11 +380,15 @@ class AuthManager {
     const user = localStorage.getItem("user");
     if (user) {
       try {
-        return JSON.parse(user);
+        const parsedUser = JSON.parse(user);
+        console.log("👤 Current user data retrieved:", parsedUser);
+        return parsedUser;
       } catch (error) {
+        console.error("❌ Error parsing user data from localStorage:", error);
         return null;
       }
     }
+    console.log("👤 No current user found in localStorage.");
     return null;
   }
 

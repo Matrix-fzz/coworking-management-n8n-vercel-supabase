@@ -1,15 +1,18 @@
 const { verifyToken } = require('../utils/jwt');
 
 const authMiddleware = (req, res, next) => {
+    console.log(`[AUTH] Middleware check for ${req.method} ${req.url}`);
     try {
         // 1. Vérifier la session (Priorité)
         if (req.session && req.session.user) {
+            console.log(`[AUTH] Session found for user: ${req.session.user.email}`);
             req.user = req.session.user;
             return next();
         }
 
         // 2. Vérifier le token (Fallback)
         const authHeader = req.headers.authorization;
+        console.log(`[AUTH] Authorization header present: ${!!authHeader}`);
         
         if (authHeader && authHeader.startsWith('Bearer ')) {
             const token = authHeader.split(' ')[1];
