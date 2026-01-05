@@ -128,25 +128,15 @@ const checkTables = async () => {
 };
 
 // Test connection functionality (optional, can be called manually)
-const initializeDatabase = async () => {
-    try {
-        const client = await pool.connect();
-        console.log('✅ Connected to PostgreSQL database successfully');
-        client.release();
-        
-        // Only check tables in development or if explicitly requested
-        // In serverless production, this should be handled by a migration script
-        if (process.env.NODE_ENV !== 'production') {
-            await checkTables();
-        }
-    } catch (error) {
-        console.error('❌ Error connecting to database:', error.message);
-    }
+// Initialize database
+const initialize = async () => {
+    console.log('[DB] Checking database initialization...');
+    await initializeDatabase();
+    await checkTables();
+    console.log('[DB] Database initialization check complete.');
 };
 
-// Initialize only in development mode to avoid overhead in serverless
-if (process.env.NODE_ENV !== 'production') {
-    initializeDatabase();
-}
+// Start initialization
+initialize().catch(err => console.error('[DB] Initialization error:', err));
 
 module.exports = pool;

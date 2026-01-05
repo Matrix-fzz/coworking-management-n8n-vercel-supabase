@@ -2,6 +2,7 @@
 class AuthManager {
   // Vérifier l'état d'authentification
   static async checkAuth() {
+    console.log("🚀 [VER-2.0] AuthManager initializing...");
     console.log("🔍 Checking auth state...");
     const savedUser = localStorage.getItem("user");
     const savedToken = localStorage.getItem("token");

@@ -11,6 +11,7 @@ class WorkspaceManager {
     // Charger les espaces
     async loadWorkspaces(page = 1, filters = {}) {
         try {
+            console.log(`🏠 [WS-DEBUG] Loading workspaces: page=${page}`, filters);
             this.showLoading(true);
             
             // Appliquer les filtres
@@ -18,6 +19,7 @@ class WorkspaceManager {
             
             // Récupérer les espaces depuis l'API
             const response = await CoworkingApi.getWorkspaces(page, appliedFilters);
+            console.log('📦 [WS-DEBUG] API Response:', response);
             
             if (response.success) {
                 this.workspaces = response.data.workspaces;

@@ -65,8 +65,8 @@ class Workspace {
             if (filters.search) {
                 query += ` AND (w.name ILIKE $${paramIndex} OR w.city ILIKE $${paramIndex} OR w.amenities ILIKE $${paramIndex})`;
                 countQuery += ` AND (w.name ILIKE $${paramIndex} OR w.city ILIKE $${paramIndex} OR w.amenities ILIKE $${paramIndex})`;
-                values.push(`%${filters.search}%`, `%${filters.search}%`, `%${filters.search}%`);
-                countValues.push(`%${filters.search}%`, `%${filters.search}%`, `%${filters.search}%`);
+                values.push(`%${filters.search}%`);
+                countValues.push(`%${filters.search}%`);
                 paramIndex++;
             }
 
@@ -95,6 +95,7 @@ class Workspace {
             values.push(limit, offset);
 
             // Execute queries
+            console.log(`[DB] Fetching workspaces: Page ${page}, Limit ${limit}`);
             const result = await pool.query(query, values);
             const countResult = await pool.query(countQuery, countValues);
 
@@ -112,6 +113,7 @@ class Workspace {
             });
 
             const total = parseInt(countResult.rows[0].total);
+            console.log(`[DB] Found ${total} workspaces total. Returned ${formattedWorkspaces.length} for current page.`);
 
             return {
                 workspaces: formattedWorkspaces,
