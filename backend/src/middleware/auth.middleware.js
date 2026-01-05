@@ -1,3 +1,5 @@
+const { verifyToken } = require('../utils/jwt');
+
 const authMiddleware = (req, res, next) => {
     console.log(`[AUTH] Middleware check for ${req.method} ${req.url}`);
     try {

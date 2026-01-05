@@ -127,16 +127,18 @@ const checkTables = async () => {
     }
 };
 
-// Test connection functionality (optional, can be called manually)
 // Initialize database
 const initialize = async () => {
     console.log('[DB] Checking database initialization...');
-    await initializeDatabase();
-    await checkTables();
-    console.log('[DB] Database initialization check complete.');
+    try {
+        await testConnection();
+        console.log('[DB] Database initialization check complete.');
+    } catch (error) {
+        console.error('[DB] Critical database initialization failure:', error);
+    }
 };
 
 // Start initialization
-initialize().catch(err => console.error('[DB] Initialization error:', err));
+initialize();
 
 module.exports = pool;

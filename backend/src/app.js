@@ -23,8 +23,8 @@ const app = express();
 // Trust proxy for Vercel/proxies (needed for secure cookies)
 app.set('trust proxy', 1);
 
-// Middleware pour parser les cookies (optionnel mais sans danger)
-app.use(cookieParser());
+// Middleware pour parser les cookies (optionnel)
+// app.use(cookieParser());
 
 // Middleware CORS
 const corsOptions = {
