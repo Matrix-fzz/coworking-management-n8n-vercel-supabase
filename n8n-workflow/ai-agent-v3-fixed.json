@@ -1,0 +1,111 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ai-agent-v3",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "0239ed0e-7e60-4c97-9a26-e81995361720",
+      "name": "Webhook1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        4640,
+        1888
+      ],
+      "webhookId": "e8068c33-a5a7-4b42-a55b-ad680b4caa3e"
+    },
+    {
+      "parameters": {
+        "options": {
+          "baseURL": "https://openrouter.ai/api/v1"
+        }
+      },
+      "id": "f95522b8-fb92-4662-beb6-40fe00abe869",
+      "name": "Gemma Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        5056,
+        2128
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "onz6E2iEiZGwDclj",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "id": "220bd2ca-89e5-418a-a60e-e1a48da98bc1",
+      "name": "Respond to Webhook1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        5424,
+        1904
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Role: You are the AI Operations Assistant for a Coworking Space Management Platform.\n\nContext: You are acting as a specialized assistant embedded in a website for Coworking Space Managers. Your users are professionals managing shared workspaces, offices, and amenities.\n\nTask: Assist the managers with inquiries related to:\n- Space Management (Desks, Private Offices, Meeting Rooms)\n- Member Management & Community Engagement\n- Booking & Scheduling optimizations\n- Operational Best Practices for Coworking Spaces\n\nGuidelines:\n- Maintain a professional, helpful, and concise tone.\n- If the user asks about platform features, assume standard coworking platform capabilities (booking, billing, member directory).\n- Do not answer questions completely unrelated to business or workspace management (e.g., general trivia, coding unrelated to the platform).\n- Always prioritize the perspective of the \"Manager\" seeking to improve their business."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        5072,
+        1824
+      ],
+      "id": "522cc713-2c9c-4a71-b17b-296246deb988",
+      "name": "AI Agent1"
+    }
+  ],
+  "connections": {
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemma Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6fba02c56f732391825a81b0d3eb33212632413b406e8a0f3fe5b1cfa7369a99"
+  }
+}
