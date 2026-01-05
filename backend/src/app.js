@@ -2,9 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
-const cookieParser = require('cookie-parser');
-const session = require('express-session');
-const pgSession = require('connect-pg-simple')(session);
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -23,44 +20,36 @@ const agentRoutes = require('./routes/agent.routes');
 // Initialiser l'application
 const app = express();
 
-// Middleware pour parser les cookies
-app.use(cookieParser());
-
 // Trust proxy for Vercel/proxies (needed for secure cookies)
 app.set('trust proxy', 1);
 
+// Middleware pour parser les cookies (optionnel mais sans danger)
+app.use(cookieParser());
+
 // Middleware CORS
 const corsOptions = {
-    origin: [
-        'http://localhost:5500', 
-        'http://127.0.0.1:5500', 
-        'https://coworking-management-tawny.vercel.app',
-        'https://coworking-management-izrei94lk-matrixs-projects-ced4ab94.vercel.app'
-    ],
+    origin: function (origin, callback) {
+        // Allow all vercel subdomains and localhost
+        if (!origin || origin.includes('vercel.app') || origin.includes('localhost') || origin.includes('127.0.0.1')) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
     optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
 
-// Middleware Session
-app.use(session({
-    store: new pgSession({
-        pool: pool,
-        tableName: 'session',
-        createTableIfMissing: true
-    }),
-    secret: process.env.SESSION_SECRET || 'coworking-secret-key-change-me',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 jours
-        secure: true, // Always true since we are on HTTPS in production or handled by proxy
-        sameSite: 'lax', // Better for same-site cookie handling
-        httpOnly: true
+// Global request logger for headers
+app.use((req, res, next) => {
+    if (req.headers.authorization) {
+        console.log(`[DEBUG] Recieved Auth Header for ${req.url}: ${req.headers.authorization.substring(0, 15)}...`);
     }
-}));
+    next();
+});
 
 // Handle OPTIONS preflight requests (Express 5 compatible)
 app.use((req, res, next) => {

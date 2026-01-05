@@ -23,13 +23,6 @@ class AuthController {
             // Créer l'utilisateur
             const user = await User.create({ username, email, password });
             
-            // Stocker l'utilisateur dans la session
-            req.session.user = {
-                id: user.id,
-                username: user.username,
-                email: user.email
-            };
-
             // Ne pas renvoyer le hash du mot de passe
             delete user.password_hash;
 
@@ -82,42 +75,25 @@ class AuthController {
                 );
             }
 
-            console.log(`[AUTH] Password valid. Setting session for user ID: ${user.id}`);
+            console.log(`[AUTH] Password valid for user ID: ${user.id}`);
 
-            // Stocker l'utilisateur dans la session
-            req.session.user = {
-                id: user.id,
-                username: user.username,
-                email: user.email
-            };
+            // Générer un token JWT pour le frontend
+            const token = generateToken(user.id, user.email);
 
-            // Sauvegarder la session explicitement pour s'assurer qu'elle est écrite avant la réponse
-            req.session.save((err) => {
-                if (err) {
-                    console.error('[AUTH] Session save error:', err);
-                    return res.status(500).json(ApiResponse.error('Failed to save session'));
-                }
-                
-                console.log('[AUTH] Session saved successfully');
-                
-                // Générer un token JWT pour le frontend (fallback au cookie)
-                const token = generateToken(user.id, user.email);
-
-                res.json(
-                    ApiResponse.success(
-                        {
-                            token,
-                            user: {
-                                id: user.id,
-                                username: user.username,
-                                email: user.email,
-                                created_at: user.created_at
-                            }
-                        },
-                        'Login successful'
-                    )
-                );
-            });
+            res.json(
+                ApiResponse.success(
+                    {
+                        token,
+                        user: {
+                            id: user.id,
+                            username: user.username,
+                            email: user.email,
+                            created_at: user.created_at
+                        }
+                    },
+                    'Login successful'
+                )
+            );
         } catch (error) {
             console.error('[AUTH] Login error:', error);
             res.status(500).json(
@@ -128,13 +104,9 @@ class AuthController {
 
     // Déconnexion
     static async logout(req, res) {
-        req.session.destroy((err) => {
-            if (err) {
-                return res.status(500).json(ApiResponse.error('Logout failed'));
-            }
-            res.clearCookie('connect.sid'); // Nom par défaut du cookie express-session
-            res.json(ApiResponse.success(null, 'Logged out successfully'));
-        });
+        // En JWT (stateless), la déconnexion se fait côté client en supprimant le token.
+        // On peut renvoyer un succès ici.
+        res.json(ApiResponse.success(null, 'Logged out successfully (stateless)'));
     }
 
     // Récupérer le profil de l'utilisateur connecté
@@ -175,15 +147,6 @@ class AuthController {
                 return res.status(400).json(
                     ApiResponse.error('Failed to update profile')
                 );
-            }
-
-            // Mettre à jour la session si nécessaire
-            if (updateData.username || updateData.email) {
-                req.session.user = {
-                    ...req.session.user,
-                    ...(updateData.username && { username: updateData.username }),
-                    ...(updateData.email && { email: updateData.email })
-                };
             }
 
             // Récupérer les nouvelles données de l'utilisateur
