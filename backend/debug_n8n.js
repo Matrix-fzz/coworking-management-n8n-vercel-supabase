@@ -4,7 +4,7 @@ dotenv.config({ path: path.join(__dirname, '.env.local') });
 dotenv.config();
 
 async function debugN8n() {
-    const url = process.env.N8N_AGENT_WEBHOOK_URL || process.env.N8N_SCRAPING_WEBHOOK_URL ;
+    const url = process.env.N8N_AGENT_WEBHOOK_URL || process.env.N8N_WEBHOOK_URL;
     
     console.log('--- N8N DIAGNOSTICS ---');
     console.log('Configured URL:', url || 'NOT SET');
