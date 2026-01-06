@@ -2,7 +2,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 async function testN8n() {
-    const url = process.env.N8N_WEBHOOK_URL || 'https://n8n.zackdev.io/webhook-test/search-places';
+    const url = process.env.N8N_SCRAPING_WEBHOOK_URL  || 'https://n8n.zackdev.io/webhook-test/search-places';
     
     console.log('Testing n8n connection to:', url);
     

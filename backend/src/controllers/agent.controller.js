@@ -11,7 +11,7 @@ class AgentController {
       }
 
       const n8nAgentWebhookUrl =
-        process.env.N8N_AGENT_WEBHOOK_URL || process.env.N8N_WEBHOOK_URL;
+        process.env.N8N_AGENT_WEBHOOK_URL || process.env.N8N_SCRAPING_WEBHOOK_URL ;
 
       console.log(`DEBUG - n8nAgentWebhookUrl found: [${n8nAgentWebhookUrl}]`);
       if (n8nAgentWebhookUrl) {

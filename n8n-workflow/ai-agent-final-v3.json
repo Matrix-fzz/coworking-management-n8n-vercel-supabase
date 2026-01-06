@@ -7,95 +7,13 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "0239ed0e-7e60-4c97-9a26-e81995361720",
-      "name": "Webhook1",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1.1,
-      "position": [
-        4640,
-        1888
-      ],
-      "webhookId": "e8068c33-a5a7-4b42-a55b-ad680b4caa3e"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "id": "119500f5-3af1-4f9e-96cf-c49cb922d9a4",
-      "name": "Set Input1",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.2,
-      "position": [
-        4880,
-        1888
-      ]
-    },
-    {
-      "parameters": {
-        "model": "google/gemma-3-27b-it:free",
-        "options": {
-          "baseURL": "https://openrouter.ai/api/v1"
-        }
-      },
-      "id": "f95522b8-fb92-4662-beb6-40fe00abe869",
-      "name": "Gemma Model1",
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1,
-      "position": [
-        5056,
-        2128
-      ],
-      "credentials": {
-        "openAiApi": {
-          "id": "GyXmqA7LnpKwiwKo",
-          "name": "OpenAi account 5"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={\n  \"output\": \"{{ $json.output }}\",\n  \"success\": true\n}",
-        "options": {}
-      },
-      "id": "220bd2ca-89e5-418a-a60e-e1a48da98bc1",
-      "name": "Respond to Webhook1",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [
-        5424,
-        1904
-      ]
-    },
-    {
-      "parameters": {
-        "options": {
-          "systemMessage": "Role: You are the AI Operations Assistant for a Coworking Space Management Platform.\n\nContext: You are acting as a specialized assistant embedded in a website for Coworking Space Managers. Your users are professionals managing shared workspaces, offices, and amenities.\n\nTask: Assist the managers with inquiries related to:\n- Space Management (Desks, Private Offices, Meeting Rooms)\n- Member Management & Community Engagement\n- Booking & Scheduling optimizations\n- Operational Best Practices for Coworking Spaces\n\nGuidelines:\n- Maintain a professional, helpful, and concise tone.\n- If the user asks about platform features, assume standard coworking platform capabilities (booking, billing, member directory).\n- Do not answer questions completely unrelated to business or workspace management (e.g., general trivia, coding unrelated to the platform).\n- Always prioritize the perspective of the \"Manager\" seeking to improve their business."
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3,
-      "position": [
-        5088,
-        1888
-      ],
-      "id": "522cc713-2c9c-4a71-b17b-296246deb988",
-      "name": "AI Agent1"
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "ai-agent-v3",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "id": "e925ebab-6824-4f08-b4fc-c4796a248eae",
+      "id": "5f396122-de1e-4912-a0c1-de5cafa2f380",
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1.1,
       "position": [
-        5104,
-        1504
+        4368,
+        3136
       ],
       "webhookId": "e8068c33-a5a7-4b42-a55b-ad680b4caa3e"
     },
@@ -113,13 +31,13 @@
         },
         "options": {}
       },
-      "id": "fe3054d8-3d6a-4253-ab4a-aee539abdbed",
+      "id": "1d7bbee1-7c98-42e6-9b4a-141ba5d6bc54",
       "name": "Set Input",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        5344,
-        1504
+        4608,
+        3136
       ]
     },
     {
@@ -129,13 +47,13 @@
           "baseURL": "https://openrouter.ai/api/v1"
         }
       },
-      "id": "6d7ba4ad-423a-44f5-b155-d2c68414aa27",
+      "id": "c7a9e6db-fa0b-4e7c-85d0-76f597266c2e",
       "name": "Gemma Model",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1,
       "position": [
-        5520,
-        1760
+        4784,
+        3392
       ],
       "credentials": {
         "openAiApi": {
@@ -150,76 +68,32 @@
         "responseBody": "={{\n{\n  \"output\": $json.output,\n  \"success\": true\n}\n}}",
         "options": {}
       },
-      "id": "ae8f5f82-9cbc-4d1b-8085-4c3b0fe87c76",
+      "id": "012dd364-b516-43a9-8e72-665c02042e19",
       "name": "Respond to Webhook",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        5888,
-        1520
+        5152,
+        3152
       ]
     },
     {
       "parameters": {
         "options": {
-          "systemMessage": "Role: You are the AI Operations Assistant for a Coworking Space Management Platform.\n\nContext: You are acting as a specialized assistant embedded in a website for Coworking Space Managers. Your users are professionals managing shared workspaces, offices, and amenities.\n\nTask: Assist the managers with inquiries related to:\n- Space Management (Desks, Private Offices, Meeting Rooms)\n- Member Management & Community Engagement\n- Booking & Scheduling optimizations\n- Operational Best Practices for Coworking Spaces\n\nGuidelines:\n- Maintain a professional, helpful, and concise tone.\n- If the user asks about platform features, assume standard coworking platform capabilities (booking, billing, member directory).\n- Do not answer questions completely unrelated to business or workspace management (e.g., general trivia, coding unrelated to the platform).\n- Always prioritize the perspective of the \"Manager\" seeking to improve their business."
+          "systemMessage": "Role: You are the AI Operations Assistant for a Coworking Space Management Platform.\n\nContext: You assist Coworking Space Managers with concise, actionable advice regarding space usage, member retention, bookings, and operations.\n\nLanguage Rules:\n- Detect the language used by the user (English, French, or Moroccan Darija).\n- REPLY STRICTLY IN THE SAME LANGUAGE as the user.\n- If the user speaks Moroccan Darija, reply in professional yet natural Moroccan Darija (using Latin/Arabizi or Arabic script matching the user).\n\nStyle Guidelines (Crucial):\n- Be extremely concise and direct (\"Lmofid\").\n- Avoid greetings, polite fillers, or long introductions (e.g., skip \"Hello, I can help you with that...\").\n- Limit answers to 2-3 sentences unless a list is absolutely necessary.\n- Use bullet points for clarity if explaining steps.\n- Tone: Professional, efficiency-focused, and helpful.\n\nTopics Allowed:\n- Space Management (Desks, Offices, Meeting Rooms).\n- Member Management & Community.\n- Booking/Scheduling optimizations.\n- Operational Best Practices.\n\nRestrictions:\n- If the topic is unrelated to coworking management, refuse politely and briefly.\n- Assume standard platform features (billing, booking, directory) exist."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3,
       "position": [
-        5552,
-        1504
+        4816,
+        3136
       ],
-      "id": "7407b19b-bd60-4b1f-abac-8643f0465eac",
+      "id": "6f05d53b-249a-4828-8a98-e8e4cc7bf7eb",
       "name": "AI Agent"
     }
   ],
   "connections": {
-    "Webhook1": {
-      "main": [
-        [
-          {
-            "node": "Set Input1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Set Input1": {
-      "main": [
-        [
-          {
-            "node": "AI Agent1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Gemma Model1": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Agent1",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "AI Agent1": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Webhook": {
       "main": [
         [

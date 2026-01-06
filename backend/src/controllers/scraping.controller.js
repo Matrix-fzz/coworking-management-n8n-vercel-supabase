@@ -18,12 +18,12 @@ class ScrapingController {
       }
 
       // URL du webhook n8n (à configurer)
-      const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL;
+      const n8nWebhookUrl = process.env.N8N_SCRAPING_WEBHOOK_URL ;
       console.log("DEBUG - Using n8n Webhook URL:", n8nWebhookUrl);
 
       if (!n8nWebhookUrl) {
         console.error(
-          "N8N_WEBHOOK_URL is not defined in environment variables"
+          "N8N_SCRAPING_WEBHOOK_URL  is not defined in environment variables"
         );
         return res
           .status(503)
