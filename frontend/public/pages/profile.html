@@ -196,16 +196,6 @@
     <script src="../js/auth.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async function() {
-             const menuToggle = document.getElementById('menuToggle');
-            const navLinks = document.getElementById('navLinks');
-            
-            if(menuToggle && navLinks) {
-                menuToggle.addEventListener('click', () => {
-                    navLinks.classList.toggle('hidden');
-                    navLinks.classList.toggle('active');
-                });
-            }
-
             if (!AuthManager.requireAuth()) return;
             AuthManager.checkAuth();
 

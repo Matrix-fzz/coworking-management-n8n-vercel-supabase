@@ -167,16 +167,6 @@
             if(window.loadFavorites) {
                 loadFavorites();
             }
-            
-            const menuToggle = document.getElementById('menuToggle');
-            const navLinks = document.getElementById('navLinks');
-            
-            if(menuToggle && navLinks) {
-                menuToggle.addEventListener('click', () => {
-                    navLinks.classList.toggle('hidden');
-                    navLinks.classList.toggle('active');
-                });
-            }
         });
     </script>
 </body>

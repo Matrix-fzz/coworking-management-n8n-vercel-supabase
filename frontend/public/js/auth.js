@@ -44,6 +44,10 @@ class AuthManager {
       }
     }
 
+    if (!savedUser) {
+      this.updateUI(false);
+    }
+
     return savedUser !== null;
   }
 
