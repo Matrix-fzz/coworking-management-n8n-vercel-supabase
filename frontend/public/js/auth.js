@@ -50,28 +50,35 @@ class AuthManager {
   // Mettre à jour l'interface utilisateur
   static updateUI(isAuthenticated, userData = null) {
     const authSection = document.getElementById("authSection");
+    const authSectionMobile = document.getElementById("authSectionMobile");
     const userSection = document.getElementById("userSection");
+    const userSectionMobile = document.getElementById("userSectionMobile");
     const usernameDisplay = document.getElementById("usernameDisplay");
+    const usernameDisplayMobile = document.getElementById("usernameDisplayMobile");
     const addWorkspaceBtn = document.getElementById("addWorkspaceBtn");
 
     if (isAuthenticated && userData) {
       if (authSection) authSection.style.display = "none";
+      if (authSectionMobile) authSectionMobile.classList.add("hidden");
+      
       if (userSection) userSection.style.display = "flex";
-      if (usernameDisplay) {
-        usernameDisplay.textContent = userData.username;
-      }
-      if (addWorkspaceBtn) {
-        addWorkspaceBtn.style.display = "block";
-      }
+      if (userSectionMobile) userSectionMobile.classList.remove("hidden");
+      
+      if (usernameDisplay) usernameDisplay.textContent = userData.username;
+      if (usernameDisplayMobile) usernameDisplayMobile.textContent = userData.username;
+      
+      if (addWorkspaceBtn) addWorkspaceBtn.style.display = "block";
     } else {
       if (authSection) authSection.style.display = "flex";
+      if (authSectionMobile) authSectionMobile.classList.remove("hidden");
+      
       if (userSection) userSection.style.display = "none";
-      if (usernameDisplay) {
-        usernameDisplay.textContent = "";
-      }
-      if (addWorkspaceBtn) {
-        addWorkspaceBtn.style.display = "none";
-      }
+      if (userSectionMobile) userSectionMobile.classList.add("hidden");
+      
+      if (usernameDisplay) usernameDisplay.textContent = "";
+      if (usernameDisplayMobile) usernameDisplayMobile.textContent = "";
+      
+      if (addWorkspaceBtn) addWorkspaceBtn.style.display = "none";
     }
   }
 
@@ -437,6 +444,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (menuToggle && navLinks) {
     menuToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("hidden");
       navLinks.classList.toggle("active");
     });
   }
