@@ -109,7 +109,7 @@ class WorkspaceManager {
             <div class="relative h-48 overflow-hidden">
                 <img src="${imageUrl}" alt="${workspace.name}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <button class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm shadow-md flex items-center justify-center text-slate-400 hover:text-red-500 hover:scale-110 transition-all duration-300 favorite-btn ${workspace.isFavorite ? 'text-red-500' : ''}" data-id="${workspace.id}">
+                <button name="favor" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm shadow-md flex items-center justify-center text-slate-400 hover:text-red-500 hover:scale-110 transition-all duration-300 favorite-btn ${workspace.isFavorite ? 'text-red-500' : ''}" data-id="${workspace.id}">
                     <i class="fas fa-heart"></i>
                 </button>
                 <div class="absolute bottom-4 right-4 ${statusColors} text-xs font-semibold px-3 py-1 rounded-full border shadow-sm">
