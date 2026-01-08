@@ -96,15 +96,8 @@ class WorkspaceController {
                 user_id: userId
             };
 
-            // Assurer que amenities est un tableau
-            if (workspaceData.amenities && typeof workspaceData.amenities === 'string') {
-                try {
-                    workspaceData.amenities = JSON.parse(workspaceData.amenities);
-                } catch (e) {
-                    // Si ce n'est pas du JSON, le convertir en tableau
-                    workspaceData.amenities = workspaceData.amenities.split(',').map(item => item.trim());
-                }
-            }
+            // Parser les équipements
+            workspaceData.amenities = this._parseAmenities(workspaceData.amenities);
 
             const workspace = await Workspace.create(workspaceData);
 
@@ -129,13 +122,9 @@ class WorkspaceController {
             const userId = req.user.id;
             const updateData = req.body;
 
-            // Convertir amenities si nécessaire
-            if (updateData.amenities && typeof updateData.amenities === 'string') {
-                try {
-                    updateData.amenities = JSON.parse(updateData.amenities);
-                } catch (e) {
-                    updateData.amenities = updateData.amenities.split(',').map(item => item.trim());
-                }
+            // Parser les équipements si fournis
+            if (updateData.amenities) {
+                updateData.amenities = this._parseAmenities(updateData.amenities);
             }
 
             const updated = await Workspace.update(workspaceId, updateData, userId);
@@ -226,6 +215,20 @@ class WorkspaceController {
                 ApiResponse.error(error.message || 'Failed to get user workspaces')
             );
         }
+    }
+    // Méthodes privées utilitaires
+    static _parseAmenities(amenities) {
+        if (!amenities) return [];
+        if (Array.isArray(amenities)) return amenities;
+        
+        if (typeof amenities === 'string') {
+            try {
+                return JSON.parse(amenities);
+            } catch (e) {
+                return amenities.split(',').map(item => item.trim()).filter(item => item !== '');
+            }
+        }
+        return [];
     }
 }
 
