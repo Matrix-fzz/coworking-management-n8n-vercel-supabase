@@ -2846,7 +2846,9 @@ body {
     padding-bottom: 1rem;
   }
 }
-
+.price{
+  color:#007fbefa;
+}
 @media (min-width: 768px) {
   .md\:block {
     display: block;

@@ -145,7 +145,7 @@ class WorkspaceManager {
 
                 <div class="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
                     <div>
-                        <span class="text-2xl font-bold text-slate-900">${formattedPrice}</span>
+                        <span class="text-2xl font-bold text-slate-900 price">${formattedPrice}</span>
                         <span class="text-xs text-slate-500">/jour</span>
                     </div>
                     ${actionButtons}
