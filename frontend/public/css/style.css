@@ -311,7 +311,7 @@ a:hover {
 
 /* Hero Section */
 .hero {
-  background-image: linear-gradient(#00000087), url('../assets/hero-bg.jpg');
+  background-image: linear-gradient(#00000087), url('../assets/hero-bg.jpg') !important;
   background-size: cover;
   background-position: center;
   color: white;

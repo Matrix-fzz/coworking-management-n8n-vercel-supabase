@@ -145,6 +145,10 @@ pre {
   /* 4 */
 }
 
+
+.hero {
+  background-image: linear-gradient(#00000087), url('../assets/hero-bg.jpg') !important;
+}
 /*
 Add the correct font size in all browsers.
 */
@@ -2230,7 +2234,7 @@ body {
 
 .text-slate-600 {
   --tw-text-opacity: 1;
-  color: rgb(71 85 105 / var(--tw-text-opacity));
+  color: rgb(184 203 230 / var(--tw-text-opacity));
 }
 
 .text-slate-700 {
@@ -2245,7 +2249,7 @@ body {
 
 .text-slate-900 {
   --tw-text-opacity: 1;
-  color: rgb(15 23 42 / var(--tw-text-opacity));
+  color: rgb(217 224 240 / var(--tw-text-opacity));
 }
 
 .text-transparent {
